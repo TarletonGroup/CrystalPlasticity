@@ -1,4 +1,4 @@
-UMAT usage instructions:
+# UMAT usage instructions:
 
 define a user material in Abaqus with
 125 state dependent variables (SDV)
