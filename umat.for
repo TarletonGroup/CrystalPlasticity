@@ -1,7 +1,9 @@
-*****************************
-** Crystal Plasticity UMAT **
-**  University of Oxford   **
-*****************************
+***********************************************************
+** Crystal Plasticity UMAT 
+**  University of Oxford   
+** Developed by Nicolo Grilli 2020,
+** rewrite of UMAT by Ed Tarleton which was based on UEL by Fionn Dunne 2007
+**********************************************************
 
       SUBROUTINE UMAT(STRESS,STATEV,DDSDDE,SSE,SPD,SCD,
      1 RPL,DDSDDT,DRPLDE,DRPLDT,
