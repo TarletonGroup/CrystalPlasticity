@@ -1,4 +1,6 @@
-# UMAT usage instructions:
+# UMAT for Abaqus written by Nicolò Grilli and Ed Tarleton based on UEL by Fionn Dunne.
+# Grilli, N., Tarleton, E. & Cocks, A.C.F. Coupling a discrete twin model with cohesive elements to understand twin-induced fracture. Int J Fract 227, 173–192 (2021). https://doi.org/10.1007/s10704-020-00504-9
+# Usage instructions:
 
 define a user material in Abaqus with
 125 state dependent variables (SDV)
