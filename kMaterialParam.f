@@ -63,7 +63,7 @@
       ! materials available are the following:
       ! 'zirconium', 'alphauranium', 'tungsten', 'copper', 'carbide',
       ! 'olivine'
-      character(len=*), parameter :: matname = 'alphauranium' 
+      character(len=*), parameter :: matname = 'zircaloy4' 
 
 **       End of parameters to set       **
 ******************************************
@@ -112,10 +112,12 @@
         v13 = 0.04
 
         ! CRSS (MPa units)
-        XTAUC1 = 15.2 ! basal
-        XTAUC2 = 67.7 ! prismatic
+        XTAUC1 = 15.2   ! basal
+        XTAUC2 = 67.7   ! prismatic
         XTAUC4 = 2000.0 ! pyramidal
-
+        XTAUC3 = 2000.0 ! Pyramidal 1st <c+a>
+        XTAUC5 = 2000.0 ! Pyramidal 2nd <c+a>
+        
         ! thermal expansion coefficients
         alpha1 = 9.5D-6
         alpha2 = alpha1
@@ -123,6 +125,42 @@
 
         ! prefactor for SSD evolution equation
        	gammast = 0.0
+            
+        case('zircaloy4')
+
+        crssratio = 3.48      
+        caratio = 1.593 !Updated for Zr			
+        ! Burgers vectors (um)
+        burger1 = 3.20E-4 ! Metallic atomic radius of 160pm - 
+                        ! converted to microns and DOubled.
+        burger2 = 3.48*burger1 !1.88*burger1
+
+        ! elastic constants (MPa units)
+        TEMP=0
+        ! Calibrated temperature constants for Zircaloy-4 (Yang Liu)
+	  E1 = (-0.0755*TEMP + 120.4411)*1.0E3
+	  E3 = (-0.0327*TEMP + 132.8621)*1.0E3
+	  v12 = 3.4273E-4*TEMP + 0.3002
+	  v13 = -9.1182E-5*TEMP + 0.2642 
+	  G13 = (-0.0233*TEMP + 38.8367)*1.0E3
+	  G12 = E1/(2.0*(1.0+v12))
+
+        ! CRSS (MPa units)
+        TAUCSSD=-0.2576*TEMP+228.4697
+        XTAUC2 = TAUCSSD!*0.92     ! Prismatic <a>  *reduce CRSS by 8 % for fitting Farrell et al. !
+        XTAUC4 = XTAUC2           ! Pyramidal <a>
+        XTAUC1 = 1.3333D0*XTAUC2  ! Basal
+        XTAUC3 = crssratio*XTAUC2 ! Pyramidal 1st <c+a>
+        XTAUC5 = XTAUC3*5.00D0    ! Pyramidal 2nd <c+a>
+        
+        ! thermal expansion coefficients
+        ! For Zr4 from Abdolvand et al., 2015 Acta Mater 93, 235-245
+        alpha1 = 1.01D-5 
+        alpha2 = alpha1 
+        alpha3 = 0.52475*alpha1
+        
+        ! prefactor for SSD evolution equation
+        gammast = 130.0
 
         case default
         WRITE(*,*)"Not sure what material"
@@ -134,13 +172,15 @@
       v23 = v13
 
       ! assign Burgers vector scalars
-      burgerv(1:6) = burger1
-      burgerv(7:12) = burger2
+      burgerv(1:12) = burger1 ! all <a> type slip systems
+      burgerv(13:nSys) = burger2 ! all <a+c> types
 
       ! assign CRSS
-      tauc(1:3) = XTAUC1
-      tauc(4:6) = XTAUC2
-      tauc(7:12) = XTAUC4
+      tauc(1:3) = XTAUC1     ! Basal <a>
+      tauc(4:6) = XTAUC2     ! Prismatic <a>
+      tauc(7:12) = XTAUC4    ! Pyramidal <a>
+      tauc(13:24) = XTAUC3   ! Pyramidal 1st <c+a>
+      tauc(25:30) = XTAUC5   ! Pyramidal 2nd <c+a>       
 
       case(1) !bcc
 
