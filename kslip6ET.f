@@ -12,7 +12,7 @@
       real*8, intent(out) :: Lp(3,3),tmat(6,6), gammaDot(nSys)
       
       integer :: i
-      real*8  :: alpha,beta,result1, rhom,dF,f,T,k,gamma0,b,psi,V,
+      real*8  :: alpha,beta,xtemp,result1, rhom,dF,f,T,k,gamma0,b,psi,V,
      + SNij(3,3),sni(6),nsi(6),SNNS(6,6),NSij(3,3),result4(6,6),
      + tempNorm(3), tempDir(3)
       
@@ -41,16 +41,40 @@ C
           V = b*b/sqrt(psi*rhossd) ! activation volume /micron^3
           
           beta = gamma0*V/(k*T) ! rate sensitivity 1/MPa
+C
+      tmat=0.; Lp = 0.;result4=0.
+	     
+      !rhogndold=sum(gndold)
+      Do I=1,nSys
+
+         if (tau(I) >= tauc(I)) THEN				
+                                                 
+             gammaDot(I)=alpha*sinh(beta*signtau(I)*(tau(I) - tauc(I)) )
+         
+              tempNorm = xNorm(I,:); 
+              tempDir = xDir(I,:)
+              SNij = spread(tempDir,2,3)*spread(tempNorm,1,3)
+              NSij = spread(tempNorm,2,3)*spread(tempDir,1,3)
+              CALL KGMATVEC6(SNij,sni)         
+              CALL KGMATVEC6(NSij,nsi) 
+              SNNS = spread(sni,2,6)*spread(nsi,1,6)
+              result1 = cosh(beta*signtau(I)*(tau(I) - tauc(I)))
+          
+              result4 = result4 + alpha*beta*dtime*result1*SNNS          
+              Lp = Lp + gammaDot(I)*SNij
+          else
+              gammaDot(I)=0.0
+          end if
+C
+      END DO
+      
+      tmat = 0.5*(result4+transpose(result4))       
           
       elseif (iphase == 2) then
 
           alpha = 0.02
-          beta = 0.1
+          beta = 0.1         
           
-      endif
-          
-      !ne = microns, stress = MPa, F = microN, therefore E = pJ
-    
 C
       tmat=0.; Lp = 0.;result4=0.
 	     
@@ -79,6 +103,53 @@ C
       END DO
       
       tmat = 0.5*(result4+transpose(result4))
+         
+      elseif (iphase == 0) then
+      
+      rhom = 0.01                                 
+      dF = 5E-8    ! for current stage                        
+      f = 1.0E+11 ! This is in s^-1 TIME IS IN SECONDS            
+      k = 1.381E-11
+      xtemp = 293.0      
+          
+C
+      tmat=0.; Lp = 0.;result4=0.
+	     
+      !rhogndold=sum(gndold)
+      Do I=1,nSys     
+         V = 1.0/sqrt(rhom*2.7778E+6)*burgerv(I)*burgerv(I) ! the factor 2.78e+6 originally came from a parameter called gammazero but the meaning of this is unknown atm.
+         beta = V/(k*xtemp) 
+         alpha = rhom*burgerv(I)*burgerv(I)*f*
+     +  exp(-dF/(k*xtemp))
+         
+         if (tau(I) >= tauc(I)) THEN				
+                                                 
+             gammaDot(I)=alpha*sinh(beta*signtau(I)*(tau(I) - tauc(I)) )
+         
+              tempNorm = xNorm(I,:); 
+              tempDir = xDir(I,:)
+              SNij = spread(tempDir,2,3)*spread(tempNorm,1,3)
+              NSij = spread(tempNorm,2,3)*spread(tempDir,1,3)
+              CALL KGMATVEC6(SNij,sni)         
+              CALL KGMATVEC6(NSij,nsi) 
+              SNNS = spread(sni,2,6)*spread(nsi,1,6)
+              result1 = cosh(beta*signtau(I)*(tau(I) - tauc(I)))
+          
+              result4 = result4 + alpha*beta*dtime*result1*SNNS          
+              Lp = Lp + gammaDot(I)*SNij
+          else
+              gammaDot(I)=0.0
+          end if
+C
+      END DO
+      
+      tmat = 0.5*(result4+transpose(result4))
+              
+      endif
+          
+      !ne = microns, stress = MPa, F = microN, therefore E = pJ
+    
+
              
       return
       end 
