@@ -25,17 +25,18 @@ C   Materials at High Temperatures, 37:5, 328-339, DOI: 10.1080/09603409.2020.18
 	  
 	  ! resolved shear stress and critical resolved shear stress
 	  ! and sign of the resolved shear stress
+	  ! tauc is positive by definition
 	  real*8, intent(in) :: tau(nSys), tauc(nSys), signtau(nSys)
 	  
 	  ! Burgers vectors
 	  real*8, intent(in) :: burgerv(nSys)
 	  
+	  ! time step
+      real*8, intent(in) :: dtime	  
+	  
 	  ! Temperature
 	  real*8, intent(in) :: CurrentTemperature
-	  
-	  ! time step
-      real*8, intent(in) :: dtime
-	  
+
 	  ! Backstress state variable
 	  real*8, intent(in) :: Backstress(nSys)
 	  
@@ -57,76 +58,103 @@ C   Materials at High Temperatures, 37:5, 328-339, DOI: 10.1080/09603409.2020.18
 	  
 	  ! Boltzmann constant (J/K)
 	  real*8, parameter :: kB = 1.38e-23
-
+	  
+	  ! reference strain rate (1/s)
+	  real*8, parameter :: gammadot0 = 1.0e7
+	  
+	  ! ratio between shear modulus at CurrentTemperature
+	  ! and at 0K
+	  real*8, parameter :: mu_over_mu0 = 103.5 / 134.0
+	  
+	  ! strain rate sensitivity exponents 
+	  real*8, parameter :: p = 0.59
+      real*8, parameter :: q = 1.8	  
+	  
+	  ! Peierls stress at 0K (MPa)
+	  real*8, parameter :: tau0 = 342.0
+	  
 **       End of parameters to set       **
 ******************************************
 
+      ! slip system index
       integer :: i
-      real*8  :: alpha,beta,result1, rhom,,f,T,k,gamma0,b,psi,V,
-     + SNij(3,3),sni(6),nsi(6),SNNS(6,6),NSij(3,3),result4(6,6),
-     + tempNorm(3), tempDir(3)
+	  
+	  ! Schmid tensor and its transpose
+	  real*8 :: SNij(3,3), NSij(3,3)
+	  
+	  ! Schmid tensor and its transpose in Voigt notation
+	  real*8 :: sni(6), nsi(6)
+	  
+	  ! higher order Schmid tensor in Voigt notation
+	  real*8 :: SNNS(6,6)
+	  
+	  ! temporary slip normal and slip direction
+	  real*8 :: tempNorm(3), tempDir(3)
+	  
+	  ! ratio between free energy jump and KB * T
+	  real*8 :: dF_over_kBT = dF / (kB * CurrentTemperature)
+	  
+	  ! argument of the exponential to calculate gammaDot
+	  real*8 :: gammaDot_exp_arg
+	  
+	  ! effective stress for slip
+	  real*8 :: tau_eff
+	  
+	  
+	  
+	  
+	  ! product between tauc and mu_over_mu0
+	  real*8 :: tauc_mu_over_mu0
+	  
+	  
+      	  
+      real*8 :: alpha,beta,result1, rhom,,f,T,k,gamma0,b,psi,V,
+     + result4(6,6),
+     + 
+	 
+      	 
       
 C
-C  *** CALCULATE THE DERIVATIVE OF PLASTIC STRAIN INCREMENT WITH 
+C  *** CALCULATE LP AND THE DERIVATIVE OF PLASTIC STRAIN INCREMENT WITH 
 C   RESPECT TO THE STRESS DEFINED AS tmat***
-C     
-      if (iphase == 1) then
-          
-          rhom =  0.035 !mobile dislocation density 
-          dF = 3.4559E-8 !! Energy barrier microN.microns = pJ          
-          f = 1.0E11 ! attempt frequency /s
-          T = 293.0
-          k = 1.381E-11 ! pJ / K
-          gamma0 = 8.33E-6 ! some reference strain which appears in eg http://dx.doi.org/10.1016/j.ijsolstr.2015.02.023
-          b = burgerv(1)                    
-             
-          if (irradiate == 1) then              
-              psi = 3.457e-2   
-          else
-              psi = 0.727e-2  
-          end if          
-          
-          alpha = rhom*b*b*f*exp(-dF/(k*T)) ! prefactor /s
-          
-          V = b*b/sqrt(psi*rhossd) ! activation volume /micron^3
-          
-          beta = gamma0*V/(k*T) ! rate sensitivity 1/MPa
-          
-      elseif (iphase == 2) then
+C    
 
-          alpha = 0.02
-          beta = 0.1
-          
-      endif
-          
-      !ne = microns, stress = MPa, F = microN, therefore E = pJ
-    
-C
-      tmat=0.; Lp = 0.;result4=0.
-	     
-      !rhogndold=sum(gndold)
-      Do I=1,nSys
+      tmat = 0.0
+	  Lp = 0.0
+	  result4 = 0.0
+	  
+	  ! contribution to Lp of all slip systems
+      do i=1,nSys
+	  
+	    tau_eff = abs(tau(i) - Backstress(i)) - mu_over_mu0 * tauc(i)
 
-         if (tau(I) >= tauc(I)) THEN				
+        if (tau_eff >= 0.0) then
+
+          gammaDot_exp_arg = tau_eff / (mu_over_mu0 * tau0)
+		  gammaDot_exp_arg = 1.0 - gammaDot_exp_arg**p
+		  gammaDot_exp_arg = gammaDot_exp_arg**q
                                                  
-             gammaDot(I)=alpha*sinh(beta*signtau(I)*(tau(I) - tauc(I)) )
+          gammaDot(i) = gammadot0*exp(-dF_over_kBT*gammaDot_exp_arg)*signtau(i)
          
-              tempNorm = xNorm(I,:); 
-              tempDir = xDir(I,:)
-              SNij = spread(tempDir,2,3)*spread(tempNorm,1,3)
-              NSij = spread(tempNorm,2,3)*spread(tempDir,1,3)
-              CALL KGMATVEC6(SNij,sni)         
-              CALL KGMATVEC6(NSij,nsi) 
-              SNNS = spread(sni,2,6)*spread(nsi,1,6)
-              result1 = cosh(beta*signtau(I)*(tau(I) - tauc(I)))
+          tempNorm = xNorm(i,:)
+          tempDir = xDir(i,:)
+          SNij = spread(tempDir,2,3)*spread(tempNorm,1,3)
+          NSij = spread(tempNorm,2,3)*spread(tempDir,1,3)
+          call KGMATVEC6(SNij,sni)         
+          call KGMATVEC6(NSij,nsi) 
+          SNNS = spread(sni,2,6)*spread(nsi,1,6)
+          result1 = cosh(beta*signtau(i)*(tau(i) - tauc(i)))
           
-              result4 = result4 + alpha*beta*dtime*result1*SNNS          
-              Lp = Lp + gammaDot(I)*SNij
-          else
-              gammaDot(I)=0.0
-          end if
-C
-      END DO
+          result4 = result4 + alpha*beta*dtime*result1*SNNS          
+          Lp = Lp + gammaDot(i)*SNij
+		  
+        else
+		
+          gammaDot(i)=0.0
+		  
+        end if
+
+      end do
       
       tmat = 0.5*(result4+transpose(result4))
              
