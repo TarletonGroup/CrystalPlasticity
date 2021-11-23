@@ -8,17 +8,19 @@ C   Double exponent slip rule in:
 C   Zhengxuan Fan & Serge Kruch (2020) A comparison of different crystal
 C   plasticity finite-element models on the simulation of nickel alloys, 
 C   Materials at High Temperatures, 37:5, 328-339, DOI: 10.1080/09603409.2020.1801951
+C   Equation in Table 1
 
-      subroutine kslipDoubleExponent(xNorm,xDir,tau,signtau,tauc,burgerv,dtime,
-     + nSys,iphase,CurrentTemperature,Backstress,Lp,tmat,gammaDot)
-         
+      subroutine kslipDoubleExponent(xNorm,xDir,tau,signtau,tauc,
+     + burgerv,dtime,nSys,iphase,CurrentTemperature,Backstress,Lp,
+     + tmat,gammaDot)
+
       implicit none
 	  
 	  ! number of slip system
       integer, intent(in):: nSys
 	  
 	  ! phase
-	  integer, intent(in):: iphase
+      integer, intent(in):: iphase
 
       ! slip directions and normals	  
       real*8, intent(in) :: xNorm(nSys,3),xDir(nSys,3)
@@ -26,10 +28,10 @@ C   Materials at High Temperatures, 37:5, 328-339, DOI: 10.1080/09603409.2020.18
 	  ! resolved shear stress and critical resolved shear stress
 	  ! and sign of the resolved shear stress
 	  ! tauc is positive by definition
-	  real*8, intent(in) :: tau(nSys), tauc(nSys), signtau(nSys)
+      real*8, intent(in) :: tau(nSys), tauc(nSys), signtau(nSys)
 	  
 	  ! Burgers vectors
-	  real*8, intent(in) :: burgerv(nSys)
+      real*8, intent(in) :: burgerv(nSys)
 	  
 	  ! time step
       real*8, intent(in) :: dtime	  
@@ -92,7 +94,7 @@ C   Materials at High Temperatures, 37:5, 328-339, DOI: 10.1080/09603409.2020.18
 	  real*8 :: tempNorm(3), tempDir(3)
 	  
 	  ! ratio between free energy jump and KB * T
-	  real*8 :: dF_over_kBT = dF / (kB * CurrentTemperature)
+	  real*8 :: dF_over_kBT
 	  
 	  ! argument of the exponential to calculate gammaDot
 	  real*8 :: gammaDot_exp_arg
@@ -100,19 +102,22 @@ C   Materials at High Temperatures, 37:5, 328-339, DOI: 10.1080/09603409.2020.18
 	  ! effective stress for slip
 	  real*8 :: tau_eff
 	  
-	  
-	  
+	  ! temporary variable to calculate the Jacobian
+	  real*8 :: result1
 	  
 	  ! product between tauc and mu_over_mu0
 	  real*8 :: tauc_mu_over_mu0
 	  
+	  ! product between tau0 and mu_over_mu0
+	  real*8 :: tau0_mu_over_mu0 = mu_over_mu0 * tau0
 	  
-      	  
-      real*8 :: alpha,beta,result1, rhom,,f,T,k,gamma0,b,psi,V,
-     + result4(6,6),
-     + 
+	  ! the variable elevated to power p (temporary variable)
+	  real*8 :: powerp
 	 
-      	 
+	  ! Jacobian
+      real*8 :: result4(6,6)
+	  
+	  dF_over_kBT = dF / (kB * CurrentTemperature)
       
 C
 C  *** CALCULATE LP AND THE DERIVATIVE OF PLASTIC STRAIN INCREMENT WITH 
@@ -126,15 +131,33 @@ C
 	  ! contribution to Lp of all slip systems
       do i=1,nSys
 	  
-	    tau_eff = abs(tau(i) - Backstress(i)) - mu_over_mu0 * tauc(i)
+	    tauc_mu_over_mu0 = mu_over_mu0 * tauc(i)
+	  
+	    tau_eff = abs(tau(i) - Backstress(i)) - tauc_mu_over_mu0
 
         if (tau_eff >= 0.0) then
 
-          gammaDot_exp_arg = tau_eff / (mu_over_mu0 * tau0)
-		  gammaDot_exp_arg = 1.0 - gammaDot_exp_arg**p
-		  gammaDot_exp_arg = gammaDot_exp_arg**q
-                                                 
-          gammaDot(i) = gammadot0*exp(-dF_over_kBT*gammaDot_exp_arg)*signtau(i)
+          gammaDot_exp_arg = tau_eff / tau0_mu_over_mu0 ! always positive
+		  
+		  if (gammaDot_exp_arg >= 1.0) then ! avoid negative values before elevating to power q
+		  
+		    gammaDot_exp_arg = 0.0
+			powerp = 0.0
+		  
+		  else ! standard case
+
+		    powerp = gammaDot_exp_arg**p
+		    gammaDot_exp_arg = (1.0 - powerp)**q
+		  
+		  end if
+		  
+          gammaDot(i) = gammadot0*exp(-dF_over_kBT*gammaDot_exp_arg)
+		  
+		  if ((tau(i) - Backstress(i)) < 0.0) then ! sign is based on (tau(i) - Backstress(i))
+		  
+            gammaDot(i) = (-1.0) * gammaDot(i)
+		  
+		  end if
          
           tempNorm = xNorm(i,:)
           tempDir = xDir(i,:)
@@ -143,14 +166,25 @@ C
           call KGMATVEC6(SNij,sni)         
           call KGMATVEC6(NSij,nsi) 
           SNNS = spread(sni,2,6)*spread(nsi,1,6)
-          result1 = cosh(beta*signtau(i)*(tau(i) - tauc(i)))
+		  
+		  ! calculate derivative d ( gammaDot(i) ) / d ( tau(i) )
+		  result1 = abs(gammaDot(i))
+		  result1 = result1 * dF_over_kBT
+		  result1 = result1 * q
+		  result1 = result1 * ((1.0 - powerp)**(q-1.0))
+		  result1 = result1 * p
+		  result1 = result1 / (tau0_mu_over_mu0**p)
+		  result1 = result1 * ((tau_eff)**(p-1.0))
           
-          result4 = result4 + alpha*beta*dtime*result1*SNNS          
+		  ! contribution to Jacobian
+          result4 = result4 + dtime*result1*SNNS     
+		  
+		  ! plastic velocity gradient contribution
           Lp = Lp + gammaDot(i)*SNij
 		  
         else
 		
-          gammaDot(i)=0.0
+          gammaDot(i) = 0.0
 		  
         end if
 
