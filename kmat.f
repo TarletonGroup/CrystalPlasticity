@@ -8,7 +8,7 @@
      + TEMP,DTEMP,vms,pdot,pnewdt,gndon,nSys,nTwin,ns,coords,
      + TwinIntegral,nTwinStart,nTwinEnd,twinon)
 
-      INCLUDE 'ABA_PARAM.INC'
+      !INCLUDE 'ABA_PARAM.INC'
 
       ! number of Abaqus state variables
       INTEGER,intent(in) :: nsvars
@@ -114,6 +114,10 @@
       ! max number of iterations of the Newton-Raphson loop
       ! WARNING: change only if you know what you are doing
       integer, parameter :: maxNRiter = 1000  
+	  
+      ! use temperature provided by Abaqus solver
+	  ! through the TEMP and DTEMP variables
+      integer, parameter :: use_abaqus_temperature = 0 
 
 **       End of parameters to set       **
 ******************************************
@@ -421,7 +425,11 @@ C     *** INITIALIZE ZERO ARRAYS ***
       signtautwin=1.0
 
       ! calculate temperature
-      CurrentTemperature = Temperature + ytemprate*time(2)
+      if (use_abaqus_temperature == 1) then ! use Abaqus temperature
+        CurrentTemperature = TEMP
+      else
+        CurrentTemperature = Temperature + ytemprate*time(2) 
+      end if
 
       ! set materials constants
       call kMaterialParam(iphase,caratio,compliance,G12,thermat,
@@ -567,7 +575,12 @@ C     *** STIFFNESS FROM LATTICE TO DEFORMED SYSTEM ***
 
       ! rotate the thermal eigenstrain in the sample reference system
       expanse33 = matmul(matmul(gmatinv,thermat),transpose(gmatinv))
-      expanse33 = expanse33*ytemprate*dtime !dstrain = alpha*dT
+      	  
+      if (use_abaqus_temperature == 1) then
+         expanse33 = expanse33*DTEMP  !dstrain = alpha*dT
+      else
+         expanse33 = expanse33*ytemprate*dtime !dstrain = alpha*dT 
+      end if
 
       CALL kmatvec6(expanse33,dstranth)
       dstranth(4:6) = 2.0*dstranth(4:6)
@@ -585,10 +598,12 @@ C     *** DETERMINE INCREMENT IN TOTAL STRAIN (6X1) ***
 C     *** COMPUTE TRIAL STRESS ***
 
       DO i=1,6
-          stressvec(i) = xstressdef(i) ! old stress
+        stressvec(i) = xstressdef(i) ! old stress
       END DO
 
-      trialstress = stressvec+matmul(xStiffdef,dtotstran)-matmul(xStiffdef,dstranth)            
+      trialstress = stressvec + matmul(xStiffdef,dtotstran) -
+     + matmul(xStiffdef,dstranth)
+	  
       CALL kvecmat6(trialstress,trialstressM)
 
       CALL kvecmat6(stressvec,stressM)
@@ -636,7 +651,8 @@ C     *** PLASTIC DEFORMATION ***
         ! twinvolfrac > 0.5 is needed for twin completion
         ! in the discrete twin model
         if (twinon == 1) then
-          if (twinvolfrac(nTwinStart) > 0.5 .or. twinvolfrac(nTwinEnd) > 0.5) then
+          if (twinvolfrac(nTwinStart) > 0.5 
+     +     .or. twinvolfrac(nTwinEnd) > 0.5) then
             EnterNRLoop = 1
           end if
         end if
@@ -667,7 +683,8 @@ C     *** USE NEWTON METHOD TO DETERMINE STRESS INCREMENT ***
 
       IF (kslip == 0) THEN ! Original slip rule with no GND coupling i.e. using alpha and beta
 
-      CALL kslip0(xNorm,xDir,tau,tauc,caratio,dtime,nSys,0.0,iphase,Lp,tmat) 
+      CALL kslip0(xNorm,xDir,tau,tauc,caratio,dtime,nSys,0.0,iphase,
+     +            Lp,tmat) 
      
       ELSE IF (kslip == 5) THEN ! Original slip rule with GND coupling 
                  
@@ -775,7 +792,8 @@ C     *** UPDATE RESOLVED SHEAR STRESS ACCORDING TO NEW STRESS ***
           call Mutexlock( 11 )   ! unlock Mutex
           
           pnewdt = 0.5
-          WRITE(*,*) "WARNING NEWTON LOOP NOT CONVERGED: jelem, kint, time:", jelem, kint, time(1)
+          WRITE(*,*) "WARNING NEWTON LOOP NOT CONVERGED: ", 
+     +                jelem, kint, time(1)
           WRITE(*,*) "fai", fai
           WRITE(*,*) "stressM", stressM
 
@@ -930,7 +948,8 @@ C     *** stress tensor
        
       ELSE         
          gmatinvnew = gmatinvold
-         write(*,*) "WARNING gmatinv not updated at jelem,kint, kinc:", jelem,kint, kinc
+         write(*,*) "WARNING gmatinv not updated at jelem,kint, kinc:", 
+     +              jelem, kint, kinc
       END IF      
 
       gmatinv = gmatinvnew            
