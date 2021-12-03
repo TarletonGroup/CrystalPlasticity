@@ -96,7 +96,7 @@
       ! 5 = Original slip rule with GND coupling 
       ! 6 = Slip rule with constants alpha and beta: alpha.sinh[ beta(tau-tauc)sgn(tau) ]
       ! 7 = Powerlaw plasticity
-      integer, parameter :: kslip = 7
+      integer, parameter :: kslip = 6
 
       ! initial temperature and temperature rate
       real*8, parameter :: Temperature = 293.0
@@ -129,7 +129,7 @@
       INTEGER, parameter :: KM=6,KN=6
 
       ! number of active slip systems considered
-      integer, parameter :: L0=12 ! HCP
+      integer, parameter :: L0=30 ! HCP
       integer, parameter :: L1=12 ! BCC
       integer, parameter :: L2=12 ! FCC
       integer, parameter :: L4=7  ! Olivine
@@ -693,7 +693,7 @@ C     *** USE NEWTON METHOD TO DETERMINE STRESS INCREMENT ***
 
       ELSE IF (kslip == 6) THEN ! updated slip rule with GND coupling
       
-      CALL  kslip6ET(xNorm,xDir,tau,signtau,tauc,burgerv,dtime,nSys,
+      CALL  kslip6ET(xNorm,xDir,tau,signtau,tauc,burgerv,dtime, nSys,
      +        iphase,irradiate,gndcut,gndtot,rhossd,Lp,tmat,gammaDot)
 
       ELSE IF (kslip == 7) THEN ! Powerlaw plasticity, orthorombic alpha-Uranium

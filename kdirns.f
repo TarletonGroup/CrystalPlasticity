@@ -17,8 +17,8 @@
          ddir1 = 0.0; dnor1 = 0.0 
       
       if(iphase .eq. 0) then !hcp
-         include 'xDir0ET.f'
-         include 'xNorm0ET.f'         
+         include 'xDir0CH.f'
+         include 'xNorm0CH.f'         
       else if(iphase .eq. 1) then !bcc (24/48)
          include 'xDir1.f'
          include 'xNorm1.f'   

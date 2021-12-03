@@ -113,7 +113,7 @@
       integer :: ns
 
       ! number of active slip systems considered
-      integer :: L0=12 ! HCP
+      integer :: L0=30 ! HCP
       integer :: L1=12 ! BCC
       integer :: L2=12 ! FCC
       integer :: L4=7  ! Olivine
@@ -437,12 +437,13 @@ C   A FULL INTEGRATION GRADIENT SCHEME
       include 'kcurlET.f'
       include 'kshapes.f'
       include 'utils.f'
-      include 'UEL.for'
+      !include 'UEL.for'
       include 'ktwinneighbourhood.f'
       include 'kRhoTwinInit.f'
       include 'kMaterialParam.f'
       include 'kCRSS.f'
       include 'kHardening.f'
-
+      !include 'psiAnn.f'
+      !include 'xAlpha.f'
             
             
