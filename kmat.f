@@ -6,7 +6,7 @@
       SUBROUTINE kmat(dtime,nsvars,usvars,xI,jelem,kint,time,F,
      + L,iphase,irradiate,C,stressvec,dstressinc,totstran,dtotstran,
      + TEMP,DTEMP,vms,pdot,pnewdt,gndon,nSys,nTwin,ns,coords,
-     + TwinIntegral,nTwinStart,nTwinEnd,twinon)
+     + TwinIntegral,nTwinStart,nTwinEnd,twinon,cubicslip)
 
       !INCLUDE 'ABA_PARAM.INC'
 
@@ -44,6 +44,9 @@
 
       ! twin systems activation flag
       INTEGER,intent(in) :: twinon
+	  
+	  ! activate cubic slip systems for CMSX-4 alloy
+      INTEGER,intent(in) :: cubicslip
 
       ! time increment
       REAL*8,intent(in) :: dtime
@@ -117,7 +120,14 @@
 	  
       ! use temperature provided by Abaqus solver
 	  ! through the TEMP and DTEMP variables
-      integer, parameter :: use_abaqus_temperature = 0 
+      integer, parameter :: use_abaqus_temperature = 0
+
+      ! 0 = temperature in K
+	  ! 1 = temperature in C
+      integer, parameter :: temp_in_celsius = 0 
+
+      ! 1 = activate creep for CMSX-4 alloy
+      integer, parameter :: creep = 0	  
 
 **       End of parameters to set       **
 ******************************************
@@ -127,13 +137,6 @@
 
       ! dimension of Voigt vectors
       INTEGER, parameter :: KM=6,KN=6
-
-      ! number of active slip systems considered
-      integer, parameter :: L0=12 ! HCP
-      integer, parameter :: L1=12 ! BCC
-      integer, parameter :: L2=12 ! FCC
-      integer, parameter :: L4=7  ! Olivine
-      integer, parameter :: LalphaUranium=8 ! alpha-uranium
 
       ! stress matrix in the Newton-Raphson loop
       REAL*8 :: stressM(3,3)
@@ -416,6 +419,7 @@ C     *** INITIALIZE ZERO ARRAYS ***
       tauctwin(1:nTwin) = 0.0
       rhossd = 0.0
       pdot = 0.0
+	  Backstress = 0.0
 
       ! define identity matrix
       DO I=1,KM; xIden6(I,I)=1.; END DO      
@@ -430,11 +434,17 @@ C     *** INITIALIZE ZERO ARRAYS ***
       else
         CurrentTemperature = Temperature + ytemprate*time(2) 
       end if
+	  
+	  ! add 273.15 if temperature is in Celsius
+      if (temp_in_celsius == 1) then
+        CurrentTemperature = CurrentTemperature + 273.15
+      end if
 
       ! set materials constants
       call kMaterialParam(iphase,caratio,compliance,G12,thermat,
      + gammast,burgerv,nSys,tauc,screwplanes,CurrentTemperature,
-     + tauctwin,nTwin,twinon,nTwinStart,nTwinEnd,TwinIntegral)
+     + tauctwin,nTwin,twinon,nTwinStart,nTwinEnd,TwinIntegral,
+     + cubicslip)
 
       ! define rotation matrices due to twinning (in the lattice system)
       TwinRot = 0.0
@@ -561,7 +571,7 @@ C     *** INITIALIZE USER ARRAYS FROM STATE VARIABLES ***
 C     *** DIRECTIONS FROM LATTICE TO DEFORMED AND TWINNED SYSTEM ***
 
       CALL kdirns(gmatinv,TwinRot,iphase,nSys,nTwin,xDir,xNorm,
-     + xTwinDir,xTwinNorm,caratio)
+     + xTwinDir,xTwinNorm,caratio,cubicslip)
 
 
 C     *** STIFFNESS FROM LATTICE TO DEFORMED SYSTEM ***
@@ -705,8 +715,21 @@ C     *** USE NEWTON METHOD TO DETERMINE STRESS INCREMENT ***
      +        rhossd,twinvolfrac,twinvolfractotal,
      +        Lp,tmat,gammaDot,gammatwindot,twinon,
      +        nTwinStart,nTwinEnd)
+      
+      ELSE IF (kslip == 8) THEN ! Double Exponent law 
+            
+      CALL kslipDoubleExponent(xNorm,xDir,tau,signtau,tauc,
+     + burgerv,dtime,nSys,iphase,CurrentTemperature,Backstress,Lp,
+     + tmat,gammaDot)
+      
+      ELSE IF (kslip == 9) THEN ! Plasticity-tertiary creep law for Nickel superalloys
+      
+      CALL NickelSuperalloy(xNorm,xDir,tau,signtau,tauc,
+     + burgerv,dtime,nSys,iphase,CurrentTemperature,Lp,
+     + tmat,gammaDot,cubicslip,creep,usvars,nsvars)
 
       END IF
+
 
 
       if(any(tmat /= tmat)) then
@@ -1018,7 +1041,8 @@ C     *** UPDATE STATE VARIABLES *** !
        END DO
       END DO   
 
-      if (iphase == 5) then ! orthorombic alpha-Uranium model
+      ! Output for orthorombic alpha-Uranium material
+      if (iphase == 5) then
 
       ! rewrite gndcut state variables
       ! for the alpha-Uranium model
@@ -1046,6 +1070,20 @@ C     *** UPDATE STATE VARIABLES *** !
         END DO
 
       end if
+	  
+	  ! Output for CMSX-4 alloy
+	  if (kslip == 9) then
+
+        do i=1,nSys
+          ! accumulated shear strains in slip systems          
+          usvars(89+i) = usvars(89+i) + abs(gammaDot(i)) * dtime
+          ! RSS in slip systems
+          usvars(107+i) = tau(i)
+        end do
+        ! maximum RSS
+        usvars(125) = maxval(abs(tau))
+
+      end if	  
 
       RETURN
 
