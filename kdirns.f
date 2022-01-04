@@ -1,5 +1,6 @@
-      subroutine kdirns(xrot,TwinRot,iphase,L,nTwin,ddir1,dnor1,dtwindir1,dtwinnor1,
-     +             caratio)
+      subroutine kdirns(xrot,TwinRot,iphase,L,nTwin,
+     + ddir1,dnor1,dtwindir1,dtwinnor1,
+     + caratio,cubicslip)
       
       implicit none
       integer :: i,j,k,slip
@@ -7,10 +8,17 @@
       integer,intent(in):: iphase,L,nTwin
       
       real*8,intent(in):: xrot(m,m), TwinRot(nTwin,m,m), caratio
-      real*8,intent(out):: ddir1(L,m),dnor1(L,m),dtwindir1(nTwin,m),dtwinnor1(nTwin,m)
+	  
+	  ! activate cubic slip systems for CMSX-4 alloy
+      INTEGER,intent(in) :: cubicslip
+	  
+      real*8,intent(out) :: ddir1(L,m),dnor1(L,m)
+	  real*8,intent(out) :: dtwindir1(nTwin,m),dtwinnor1(nTwin,m)
 
-      real(kind=8):: ddir(L,m),dnor(L,m),dtwindir(nTwin,m),dtwinnor(nTwin,m)
-      real(kind=8):: tdir(m),tnor(m),ttwindir(m),ttwinnor(m),tdir1(m),tnor1(m),ttwindir1(m),ttwinnor1(m)
+      real(kind=8) :: ddir(L,m),dnor(L,m)
+	  real(kind=8) :: dtwindir(nTwin,m),dtwinnor(nTwin,m)
+      real(kind=8) :: tdir(m),tnor(m),ttwindir(m),ttwinnor(m)
+	  real(kind=8) :: tdir1(m),tnor1(m),ttwindir1(m),ttwinnor1(m)
      
       real(kind=8):: xdirmag,xnormag,xtwindirmag,xtwinnormag
 
@@ -23,8 +31,13 @@
          include 'xDir1.f'
          include 'xNorm1.f'   
       else if(iphase .eq. 2) then !fcc (12)
-         include 'xDir2.f'
-         include 'xNorm2.f'
+         if (cubicslip == 0) then ! cubic slip
+            include 'xDir2.f'
+            include 'xNorm2.f'
+         else
+            include 'xDir2c.f'
+            include 'xNorm2c.f' 
+         end if 
       else if (iphase .eq. 4) then ! olivine (7)
           include 'xDir4.f'
           include 'xNorm4.f'
