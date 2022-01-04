@@ -96,7 +96,7 @@
 
       INTEGER :: i, j
 	  
-      TCelsius = Temperature + 273.5
+      TCelsius = Temperature - 273.5
 
       ! select crystal type       
       SELECT CASE(iphase)
