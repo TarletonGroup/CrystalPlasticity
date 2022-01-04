@@ -660,7 +660,7 @@ C     *** PLASTIC DEFORMATION ***
 
       ! decide if Newton Raphson loop starts
       EnterNRLoop = 0
-      if (xtau >= 0.5 .or. xtautwin >= 0.5) then ! stress condition
+      if (xtau > 0.0 .or. xtautwin >= 0.5) then ! stress condition
         EnterNRLoop = 1
       else
         ! twinvolfrac > 0.5 is needed for twin completion
