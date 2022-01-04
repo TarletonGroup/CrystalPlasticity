@@ -99,7 +99,9 @@
       ! 5 = Original slip rule with GND coupling 
       ! 6 = Slip rule with constants alpha and beta: alpha.sinh[ beta(tau-tauc)sgn(tau) ]
       ! 7 = Powerlaw plasticity
-      integer, parameter :: kslip = 7
+      ! 8 = Double Exponent law
+      ! 9 = 'Nickel_supperalloy' coupled double exponent law and tertiary creep law (additive)
+      integer, parameter :: kslip = 9
 
       ! initial temperature and temperature rate
       real*8, parameter :: Temperature = 293.0
@@ -247,6 +249,9 @@
 
       ! rotated slip normals and directions (gmatinv)
       REAL*8,dimension(nSys,M) :: xNorm,xDir
+	  
+      ! Back stress for double exponent law
+      REAL*8,dimension(nSys) :: Backstress
 
       ! resolved shear stress on slip system
       ! and its sign
