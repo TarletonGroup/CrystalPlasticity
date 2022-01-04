@@ -5,7 +5,8 @@
 
       SUBROUTINE kMaterialParam(iphase,caratio,compliance,G12,thermat,
      + gammast,burgerv,nSys,tauc,screwplanes,Temperature,
-     + tauctwin,nTwin,twinon,nTwinStart,nTwinEnd)
+     + tauctwin,nTwin,twinon,nTwinStart,nTwinEnd,
+     + cubicslip)
 
       ! crystal type
       INTEGER,intent(in) :: iphase
@@ -13,7 +14,7 @@
       ! number of slip systems
       INTEGER,intent(in) :: nSys
 
-      ! current temperature
+      ! current temperature in Kelvin
       REAL*8,intent(in) :: Temperature
 
       ! total number of twin systems
@@ -26,6 +27,9 @@
       ! interval [nTwinStart,nTwinEnd] in the
       ! twin system file
       INTEGER,intent(in) :: nTwinStart,nTwinEnd
+	  
+	  ! activate cubic slip systems for CMSX-4 alloy
+      INTEGER,intent(in) :: cubicslip
 
       ! c/a ratio for hcp crystals
       REAL*8,intent(out) :: caratio
@@ -62,7 +66,7 @@
       ! by modifying this subroutine
       ! materials available are the following:
       ! 'zirconium', 'alphauranium', 'tungsten', 'copper', 'carbide',
-      ! 'olivine'
+      ! 'olivine', 'CMSX4' (Nickel alloy)
       character(len=*), parameter :: matname = 'alphauranium' 
 
 **       End of parameters to set       **
@@ -86,8 +90,13 @@
 
       ! thermal expansion coefficients
       REAL*8 :: alpha1, alpha2, alpha3
+	  
+	  ! temperature in Celsius
+      REAL*8 :: TCelsius
 
       INTEGER :: i, j
+	  
+      TCelsius = Temperature + 273.5
 
       ! select crystal type       
       SELECT CASE(iphase)
@@ -209,6 +218,63 @@
 
         ! prefactor for SSD evolution equation
         gammast = 0.0
+		
+        case('CMSX4')
+c
+        ! CRSS (MPa units)
+        if (TCelsius .LE. 850.0) then   !  Celsius units
+		
+      tauc=-0.000000001051*TCelsius**4 +
+     + 0.000001644382*TCelsius**3 -
+     + 0.000738679333*TCelsius**2 + 0.128385617901*TCelsius + 
+     + 446.547978926622
+	 
+        if (cubicslip == 1) then
+       
+      tauc(13:18)=-0.000000001077*TCelsius**4 + 
+     + 0.000001567820*TCelsius**3 -
+     + 0.000686532147*TCelsius**2 - 0.074981918833*TCelsius + 
+     + 571.706771689334
+        
+        end if
+		
+        else
+		
+      tauc=-1.1707*TCelsius + 1478.9
+           
+        if (cubicslip == 1) then
+	  
+      tauc(13:18)=-0.9097*TCelsius + 1183
+      
+        end if
+		   
+        end if ! end temperature check
+
+        ! TCelsius dependent stiffness constants (MPa units)
+        if (TCelsius .LE. 800.0) then   !  Celsius units
+		
+      C11=-40.841*TCelsius+251300
+      C12=-14.269*TCelsius+160965
+		   
+        else
+		
+      C11=0.111364*TCelsius**2-295.136*TCelsius+382827.0
+      C12=-0.000375*TCelsius**3+1.3375*TCelsius**2 -
+     + 1537.5*TCelsius+716000
+	 
+        end if ! end temperature check  
+		
+      G12=-0.00002066*TCelsius**3+0.021718*TCelsius**2 -
+     + 38.3179*TCelsius+129864
+
+      E1 = (C11-C12)*(C11+2*C12)/(C11+C12)
+      v12 = E1*C12/((C11-C12)*(C11+2*C12))
+
+      ! temperature dependent thermal expansion coefficient
+      alpha1 = 9.119E-9*TCelsius +1.0975E-5
+
+      ! prefactor for SSD evolution equation
+      gammast = 0.0
 
         case default
         WRITE(*,*)"Not sure what material"
