@@ -452,8 +452,7 @@ C   A FULL INTEGRATION GRADIENT SCHEME
       include 'kMaterialParam.f'
       include 'kCRSS.f'
       include 'kHardening.f'
-      include 'kslipDoubleExponent.f'
-      include 'NickelSuperalloy.f'
+      include 'kslipCreepPowerLaw.f'
 
             
             
