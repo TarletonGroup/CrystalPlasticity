@@ -99,9 +99,8 @@
       ! 5 = Original slip rule with GND coupling 
       ! 6 = Slip rule with constants alpha and beta: alpha.sinh[ beta(tau-tauc)sgn(tau) ]
       ! 7 = Powerlaw plasticity
-      ! 8 = Double Exponent law
-      ! 9 = 'Nickel_supperalloy' coupled double exponent law and tertiary creep law (additive)
-      integer, parameter :: kslip = 9
+      ! 8 = Powerlaw plasticity and creep for Ni alloys
+      integer, parameter :: kslip = 8
 
       ! initial temperature and temperature rate
       real*8, parameter :: Temperature = 293.0
@@ -129,7 +128,7 @@
       integer, parameter :: temp_in_celsius = 0 
 
       ! 1 = activate creep for CMSX-4 alloy
-      integer, parameter :: creep = 0	  
+      integer, parameter :: creep = 1	  
 
 **       End of parameters to set       **
 ******************************************
@@ -161,7 +160,10 @@
       ! cumulative plastic strain (for output)
       ! vector and scalar
       REAL*8 :: totplasstran(6), p
-
+	  
+      ! cumulative plastic strain on each slip system, signed
+      REAL*8 :: slipsysplasstran(nSys)
+	  
       ! identity matrix
       REAL*8 :: xIden6(KM,KN)
 
@@ -249,9 +251,6 @@
 
       ! rotated slip normals and directions (gmatinv)
       REAL*8,dimension(nSys,M) :: xNorm,xDir
-	  
-      ! Back stress for double exponent law
-      REAL*8,dimension(nSys) :: Backstress
 
       ! resolved shear stress on slip system
       ! and its sign
@@ -424,7 +423,6 @@ C     *** INITIALIZE ZERO ARRAYS ***
       tauctwin(1:nTwin) = 0.0
       rhossd = 0.0
       pdot = 0.0
-	  Backstress = 0.0
 
       ! define identity matrix
       DO I=1,KM; xIden6(I,I)=1.; END DO      
@@ -483,6 +481,11 @@ C     *** INITIALIZE USER ARRAYS FROM STATE VARIABLES ***
       DO i=1,6
         totstran(i) = usvars(16+i)
       END DO
+	  
+	  ! get cumulative plastic strain on each slip system
+      DO i=1,nSys
+        slipsysplasstran(i) = usvars(89+i)
+      END DO	  
 
       ! initialize stress as the values at previous increment
       DO i=1,6
@@ -721,17 +724,11 @@ C     *** USE NEWTON METHOD TO DETERMINE STRESS INCREMENT ***
      +        Lp,tmat,gammaDot,gammatwindot,twinon,
      +        nTwinStart,nTwinEnd)
       
-      ELSE IF (kslip == 8) THEN ! Double Exponent law 
-            
-      CALL kslipDoubleExponent(xNorm,xDir,tau,signtau,tauc,
-     + burgerv,dtime,nSys,iphase,CurrentTemperature,Backstress,Lp,
-     + tmat,gammaDot)
-      
-      ELSE IF (kslip == 9) THEN ! Plasticity-tertiary creep law for Nickel superalloys
-      
-      CALL NickelSuperalloy(xNorm,xDir,tau,signtau,tauc,
-     + burgerv,dtime,nSys,iphase,CurrentTemperature,Lp,
-     + tmat,gammaDot,cubicslip,creep,usvars,nsvars)
+      ELSE IF (kslip == 8) THEN ! Powerlaw plasticity and creep
+
+      CALL kslipCreepPowerLaw(xNorm,xDir,tau,signtau,tauc,
+     + dtime,nSys,iphase,CurrentTemperature,Lp,
+     + tmat,gammaDot,cubicslip,creep,slipsysplasstran)      
 
       END IF
 
@@ -1016,8 +1013,12 @@ C     *** UPDATE STATE VARIABLES *** !
         usvars(16+i) = totstran(i) + dtotstran(i)
       END DO
  
-      usvars(26) = gndtot   
-      
+      usvars(26) = gndtot
+
+      DO i=1,nSys
+        usvars(89+i) = slipsysplasstran(i) + gammaDot(i)*dtime	  
+      END DO
+	  
       DO i=1,6
        usvars(47+i) = xstressdef(i)
       END DO
@@ -1080,8 +1081,6 @@ C     *** UPDATE STATE VARIABLES *** !
 	  if (kslip == 9) then
 
         do i=1,nSys
-          ! accumulated shear strains in slip systems          
-          usvars(89+i) = usvars(89+i) + abs(gammaDot(i)) * dtime
           ! RSS in slip systems
           usvars(107+i) = tau(i)
         end do
