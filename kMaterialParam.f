@@ -202,6 +202,9 @@
 
         ! CRSS (MPa units)
         XTAUC1 = 20.0
+		
+        ! assign CRSS: same for all slip systems
+        tauc = XTAUC1
 
         ! Burgers vectors (um)
         burger1 = 2.55E-4
@@ -292,9 +295,6 @@ c
       
       ! assign Burgers vector scalars
       burgerv = burger
-
-      ! assign CRSS: same for all slip systems
-      tauc = XTAUC1
       
       case(3) ! carbide
 
