@@ -1,0 +1,11 @@
+!=============================================================================
+! COPYRIGHT DASSAULT SYSTEMES 2001-2013
+! 
+! @CAA2Level L0
+! @CAA2Usage U0
+!
+!=============================================================================
+
+#include  <SMAAspUserUtilities.hdr>
+#include  <SMAAspUserArrays.hdr>
+

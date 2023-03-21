@@ -1,0 +1,53 @@
+!=============================================================================
+! COPYRIGHT DASSAULT SYSTEMES 2001-2013
+! 
+! @CAA2Level L0
+! @CAA2Usage U0
+!
+!=============================================================================
+
+C
+C Fortran interface to utilities used in Parallel User Subroutines
+C
+
+      INTERFACE 
+
+      ! Function to find out the number of threads in ABAQUS
+
+      FUNCTION GETNUMTHREADS ( ) RESULT( numThreads )
+         INTEGER(KIND=4) :: numThreads
+      END FUNCTION GETNUMTHREADS
+
+      ! Get ID of the current thread ( an ABAQUS assigned integer )
+
+      FUNCTION get_thread_id ( )  RESULT ( threadID )
+         INTEGER(KIND=4) :: threadID
+      END FUNCTION get_thread_id
+
+      ! Get ABAQUS MPI communicator or 0 if not in MPI mode
+
+      FUNCTION GETCOMMUNICATOR ( ) RESULT ( communicator )
+         INTEGER(KIND=4) :: communicator
+      END FUNCTION GETCOMMUNICATOR
+
+      ! Initialize Mutex -- Typically, this is done at the
+      ! beginning of the analysis in UXTERNALDB/VEXTERNALDB
+
+      SUBROUTINE MutexInit ( ID ) 
+         INTEGER(KIND=4) :: ID
+      END SUBROUTINE MutexInit
+
+      ! Lock Mutex -- can be called anywhere after initialization
+
+      SUBROUTINE MutexLock ( ID ) 
+         INTEGER(KIND=4) :: ID
+      END SUBROUTINE MutexLock
+
+      ! Unlock Mutex -- can be called anywhere after initialization
+
+      SUBROUTINE MutexUnlock ( ID ) 
+         INTEGER(KIND=4) :: ID
+      END SUBROUTINE MutexUnlock
+
+
+      END INTERFACE
