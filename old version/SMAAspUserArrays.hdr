@@ -1,0 +1,315 @@
+!=============================================================================
+! COPYRIGHT DASSAULT SYSTEMES 2001-2013
+! 
+! @CAA2Level L0
+! @CAA2Usage U0
+!
+!=============================================================================
+
+C 
+C  Fortran interface to Global Allocatable Arrays for use in Parallel User Subroutines
+C
+
+C Arguments:
+C     ID      -- arbitrary integer chosen by the user, used to locate the same array
+C                from any user subroutine. Max value for an ID is INT_MAX ( 2,147,483,647 ). 
+C     SIZE    -- max value for size is INT_MAX ( 2,147,483,647 )
+C     INITVAL -- initial value to initialize the arrays with
+
+C Note:  
+C     FloatArrays can be used to store both SINGLE and DOUBLE PRECISION values
+
+      INTERFACE
+
+         FUNCTION SMAIntArrayCreate( ID, SIZE, INITVAL )  ! -- Create an array or resize it
+           INTEGER(KIND=8) :: SMAIntArrayCreate ! returns a pointer to the newly allocated array 
+           INTEGER(KIND=4) :: ID        ! Arbitrary integer chosen by the user, used later to locate this array
+           INTEGER(KIND=4) :: SIZE      ! max value is INT_MAX ( 2,147,483,647 ) 
+           INTEGER(KIND=4) :: INITVAL   ! initial value to initialize each value in the array with
+         END FUNCTION SMAIntArrayCreate   
+
+         FUNCTION SMAIntArrayAccess(ID) ! -- Access an array 
+           INTEGER(KIND=8) :: SMAIntArrayAccess  ! -- Returns an address that can be associated with a Fortran pointer
+           INTEGER(KIND=4) :: ID        ! Array ID
+         END FUNCTION SMAIntArrayAccess
+
+
+         FUNCTION SMAIntArraySize(ID)   ! -- Return the current size of the array as the number of integers
+           INTEGER(KIND=8) :: SMAIntArraySize 
+           INTEGER(KIND=4) :: ID        ! Array ID
+         END FUNCTION SMAIntArraySize   
+
+         SUBROUTINE SMAIntArrayDelete(ID) ! -- Delete an array with the given ID
+            INTEGER(KIND=4) :: ID         ! Array ID
+         END SUBROUTINE SMAIntArrayDelete  
+
+
+         FUNCTION SMAFloatArrayAccess( ID ) ! -- Get an address that can be associated with a Fortran pointer
+           INTEGER(KIND=8) :: SMAFloatArrayAccess  ! -- Returns an address that can be associated with a Fortran pointer
+	       INTEGER(KIND=4) :: ID       ! Array ID
+         END FUNCTION SMAFloatArrayAccess 
+
+         FUNCTION SMAFloatArraySize( ID )  ! -- Return the current size of the array as the number of floats
+           INTEGER(KIND=8) :: SMAFloatArraySize 
+           INTEGER(KIND=4) :: ID        ! Array ID
+         END FUNCTION SMAFloatArraySize
+
+         SUBROUTINE SMAFloatArrayDelete( ID ) 
+            INTEGER(KIND=4) :: ID       ! Array ID
+         END SUBROUTINE SMAFloatArrayDelete 
+
+      END INTERFACE
+
+
+      INTERFACE SMAFloatArrayCreate
+
+         INTEGER*8 FUNCTION SMAFloatArrayCreateSP( ID, SIZE, INITVAL ) ! returns a pointer to the newly allocated array
+           INTEGER(KIND=4),INTENT(IN) :: ID         ! Arbitrary integer chosen by the user, used later to locate this array
+           INTEGER(KIND=4),INTENT(IN) :: SIZE       ! max value is INT_MAX ( 2,147,483,647 ) 
+           REAL(KIND=4),   INTENT(IN) :: INITVAL    ! initial value for each element of the array (SINGLE PRECISION)
+         END FUNCTION
+
+         INTEGER*8 FUNCTION SMAFloatArrayCreateDP( ID, SIZE, INITVAL ) ! returns a pointer to the newly allocated array
+           INTEGER(KIND=4),INTENT(IN) :: ID         ! Arbitrary integer chosen by the user, used later to locate this array
+           INTEGER(KIND=4),INTENT(IN) :: SIZE       ! max value is INT_MAX ( 2,147,483,647 ) 
+           REAL(KIND=8),   INTENT(IN) :: INITVAL    ! initial value for each element of the array (DOUBLE PRECISION)
+         END FUNCTION 
+
+         FUNCTION SMAFloatArrayCreateNoInit( ID, SIZE ) RESULT (PTR) 
+           INTEGER(KIND=8)            :: PTR        ! Returns a pointer to the newly allocated array
+           INTEGER(KIND=4),INTENT(IN) :: ID         ! Arbitrary integer chosen by the user, used later to locate this array
+           INTEGER(KIND=4),INTENT(IN) :: SIZE       ! max value is INT_MAX ( 2,147,483,647 ) 
+         END FUNCTION 
+
+      END INTERFACE SMAFloatArrayCreate
+
+
+      !---------------------------------------------------------------------------------------------------------
+      !  Real Arrays  -- Allocatable arrays of 'Real'. This type switches its precision along with Explicit.
+      !                  Real is 32-bits long in single precision Explict, and 64-bits long in double precision.
+      !---------------------------------------------------------------------------------------------------------
+      !  Usage: 
+      !           pointer(ptrra,ra)              ! note: type of 'ra' should be implicit, not declared
+      !                   
+      !           ptrra = SMARealArrayCreate(ID, SIZE)
+      !           prtra = SMARealArrayCreate(ID, SIZE, INITVAL)
+      !---------------------------------------------------------------------------------------------------------
+
+      INTERFACE SMARealArrayCreate
+
+         FUNCTION SMARealArrayCreateSP( ID, SIZE, INITVAL ) RESULT (PTR) 
+           INTEGER(KIND=8)            :: PTR        ! Returns a pointer to the newly allocated array
+           INTEGER(KIND=4),INTENT(IN) :: ID         ! Arbitrary integer chosen by the user, used later to locate this array
+           INTEGER(KIND=4),INTENT(IN) :: SIZE       ! max value is INT_MAX ( 2,147,483,647 ) 
+           REAL(KIND=4),   INTENT(IN) :: INITVAL    ! (optional) initial value for each element of the array
+         END FUNCTION SMARealArrayCreateSP 
+
+
+         FUNCTION SMARealArrayCreateDP( ID, SIZE, INITVAL ) RESULT (PTR) 
+           INTEGER(KIND=8)            :: PTR        ! Returns a pointer to the newly allocated array
+           INTEGER(KIND=4),INTENT(IN) :: ID         ! Arbitrary integer chosen by the user, used later to locate this array
+           INTEGER(KIND=4),INTENT(IN) :: SIZE       ! max value is INT_MAX ( 2,147,483,647 ) 
+           REAL(KIND=8),   INTENT(IN) :: INITVAL    ! (optional) initial value for each element of the array
+         END FUNCTION SMARealArrayCreateDP
+
+         FUNCTION SMARealArrayCreateNoInit( ID, SIZE ) RESULT (PTR) 
+           INTEGER(KIND=8)            :: PTR        ! Returns a pointer to the newly allocated array
+           INTEGER(KIND=4),INTENT(IN) :: ID         ! Arbitrary integer chosen by the user, used later to locate this array
+           INTEGER(KIND=4),INTENT(IN) :: SIZE       ! max value is INT_MAX ( 2,147,483,647 ) 
+         END FUNCTION SMARealArrayCreateNoInit
+
+       END INTERFACE
+
+       INTERFACE
+
+         FUNCTION SMARealArrayAccess( ID ) RESULT( PTR ) 
+           INTEGER(KIND=8) :: PTR      ! -- Returns an address that can be associated with a Fortran pointer
+	   INTEGER(KIND=4) :: ID       ! Array ID
+         END FUNCTION SMARealArrayAccess 
+
+         FUNCTION SMARealArraySize( ID )  ! -- Return the current size of the array as the number of floats
+           INTEGER(KIND=8) :: SMARealArraySize 
+           INTEGER(KIND=4) :: ID        ! Array ID
+         END FUNCTION SMARealArraySize
+
+         SUBROUTINE SMARealArrayDelete( ID ) 
+            INTEGER(KIND=4) :: ID       ! Array ID
+         END SUBROUTINE SMARealArrayDelete 
+
+      END INTERFACE
+
+
+      !--------------------------------------------------------------------------------------------------------
+      !
+      !      Struct Arrays  -- Allocatable arrays of Fortran or C/C++ Structs ( user defined types )
+      !
+      !--------------------------------------------------------------------------------------------------------
+      
+
+      INTERFACE SMAStructArrayCreate
+
+	! -- Creates an array with a given ID, length = NUM_ITEMS; no initialization
+        integer*8 FUNCTION SMAStructArrayCreateNoInit(ARRAY_ID, NUM_ITEMS, ITEM_SIZE)   
+           INTEGER(KIND=4),INTENT(IN) :: ARRAY_ID   ! arbitrary ID chosen by the user                      
+           INTEGER(KIND=4),INTENT(IN) :: NUM_ITEMS  ! max value is INT_MAX ( 2,147,483,647 )           
+           INTEGER(KIND=8),INTENT(IN) :: ITEM_SIZE  ! size of one struct in bytes as returned by SIZEOF()   
+        END FUNCTION SMAStructArrayCreateNoInit  
+
+        ! -- Creates an array with a given ID and SIZE; each slot initialized to INITVAL
+        integer*8 FUNCTION SMAStructArrayCreateInit(ARRAY_ID,NUM_ITEMS,ITEM_SIZE,INITVAL)   
+           INTEGER(KIND=4),INTENT(IN) :: ARRAY_ID   ! arbitrary ID chosen by the user              
+           INTEGER(KIND=4),INTENT(IN) :: NUM_ITEMS  ! max value is INT_MAX ( 2,147,483,647 ) 
+           INTEGER(KIND=8),INTENT(IN) :: ITEM_SIZE  ! size of one struct in bytes as returned by SIZEOF()   
+           CLASS(*),INTENT(IN)        :: INITVAL    ! a struct used as initializer for each slot of the array
+        END FUNCTION SMAStructArrayCreateInit  
+
+      END INTERFACE SMAStructArrayCreate
+
+      INTERFACE 
+
+      ! -- Return the size of the array as the number of structs (a 64-bit integer)
+
+      FUNCTION SMAStructArraySize(ID)   
+           INTEGER(KIND=8) :: SMAStructArraySize 
+           INTEGER(KIND=4) :: ID        ! Array ID
+      END FUNCTION SMAStructArraySize   
+
+      ! -- Delete the array with the given ID
+
+      SUBROUTINE SMAStructArrayDelete(ID)           
+           INTEGER(KIND=4) :: ID    ! Array ID    
+      END SUBROUTINE SMAStructArrayDelete
+
+      ! -- Access an array: return a pointer which can be associated with native array in Fortran
+      !    If an attempt is made to access an array which does not exist (has not been created, or has been deleted).
+      !    it will return 0.
+
+      FUNCTION SMAStructArrayAccess(ID) 
+           INTEGER(KIND=8) :: SMAStructArrayAccess  ! -- Returns an address that can be associated with a Fortran pointer
+           INTEGER(KIND=4) :: ID                    ! Array ID
+      END FUNCTION SMAStructArrayAccess
+
+
+      END INTERFACE 
+
+
+
+
+C 
+C  Fortran interfaces to Allocatable Thread-Local Arrays for use in User Subroutines
+C
+
+C Arguments:
+C     ID   -- arbitrary integer chosen by the user, used to locate/reference the same array
+C             from any other user subroutine.
+C     SIZE -- max value is INT_MAX ( 2,147,483,647 )
+C     INITVAL -- (optional) initial value to initialize the arrays with. If not supplied
+C             integer arrays will be initialized with INT_MAX, float arrays -- with NANS.
+
+C Note:  
+C     FloatArrays can be used to store both SINGLE and DOUBLE PRECISION values
+
+      INTERFACE SMALocalIntArrayCreate
+
+      ! -- Creates an array with a given ID and SIZE; initialized to supplied INITVAL
+      integer*8 FUNCTION SMALocalIntArrayCreateInit(ID,SIZE,INITVAL)   
+          INTEGER(KIND=4),INTENT(IN) :: ID                 
+          INTEGER(KIND=4),INTENT(IN) :: SIZE    
+          INTEGER(KIND=4),INTENT(IN) :: INITVAL   
+      END FUNCTION SMALocalIntArrayCreateInit  
+
+      ! -- Creates an array with a given ID and SIZE; initialized implicitly to INT_MAX
+      integer*8 FUNCTION SMALocalIntArrayCreateNoInit(ID,SIZE)   
+          INTEGER(KIND=4),INTENT(IN) :: ID                 
+          INTEGER(KIND=4),INTENT(IN) :: SIZE               
+      END FUNCTION SMALocalIntArrayCreateNoInit  
+
+      END INTERFACE SMALocalIntArrayCreate
+
+
+      INTERFACE SMALocalIntArrayAccess
+
+      ! -- Return an address that can be associated with a Fortran pointer
+
+      integer*8 FUNCTION SMALocalIntArrayAccess(ID)        
+          INTEGER(KIND=4),INTENT(IN) :: ID                 
+      END FUNCTION SMALocalIntArrayAccess   
+
+      END INTERFACE SMALocalIntArrayAccess
+
+
+
+
+      INTERFACE SMALocalIntArraySize
+
+      !  -- Return the current size of the array as the number of integers
+
+      integer*4 FUNCTION SMALocalIntArraySize(ID)          
+           INTEGER(KIND=4),INTENT(IN) :: ID                
+      END FUNCTION SMALocalIntArraySize     
+
+      END INTERFACE SMALocalIntArraySize
+
+
+      INTERFACE SMALocalFloatArrayCreate
+
+      ! -- Creates an array with a given  ID and SIZE
+
+      FUNCTION SMALocalFloatArrayCreateNoInit(ID,SIZE) 
+          INTEGER(KIND=8) :: SMALocalFloatArrayCreateNoInit ! returns a pointer to the newly allocated array 
+          INTEGER(KIND=4),INTENT(IN) :: ID         ! arbitrary number chosen by the user                 
+          INTEGER(KIND=4),INTENT(IN) :: SIZE               
+      END FUNCTION SMALocalFloatArrayCreateNoInit 
+
+      ! -- Creates an array with a given  ID and SIZE; each slot initialized to SINGLE-PRECISION INITVAL 
+
+      FUNCTION SMALocalFloatArrayCreateSP(ID,SIZE,INITVAL) 
+          INTEGER(KIND=8) :: SMALocalFloatArrayCreateSP ! returns a pointer to the newly allocated array 
+          INTEGER(KIND=4),INTENT(IN) :: ID         ! arbitrary number chosen by the user       
+          INTEGER(KIND=4),INTENT(IN) :: SIZE               
+          REAL   (KIND=4),INTENT(IN) :: INITVAL    ! initial value for each element of the array (SINGLE PRECISION)   
+      END FUNCTION SMALocalFloatArrayCreateSP 
+
+      ! -- Creates an array with a given  ID and SIZE; each slot initialized to DOUBLE-PRECISION INITVAL
+
+      FUNCTION SMALocalFloatArrayCreateDP(ID,SIZE,INITVAL) 
+          INTEGER(KIND=8) :: SMALocalFloatArrayCreateDP ! returns a pointer to the newly allocated array 
+          INTEGER(KIND=4),INTENT(IN) :: ID         ! arbitrary number chosen by the user               
+          INTEGER(KIND=4),INTENT(IN) :: SIZE            
+          REAL   (KIND=8),INTENT(IN) :: INITVAL    ! initial value for each element of the array (DOUBLE PRECISION)   
+      END FUNCTION SMALocalFloatArrayCreateDP 
+
+      END INTERFACE SMALocalFloatArrayCreate
+
+
+
+      INTERFACE
+
+      ! -- Get an address of the array that can be associated with a Fortran pointer
+
+      integer*8 FUNCTION SMALocalFloatArrayAccess(ID)      
+           INTEGER(KIND=4),INTENT(IN) :: ID                
+      END FUNCTION SMALocalFloatArrayAccess 
+
+      ! -- Return the current size of the array as the number of floats
+
+      integer*4 FUNCTION SMALocalFloatArraySize(ID)        
+           INTEGER(KIND=4),INTENT(IN) :: ID          
+      END FUNCTION SMALocalFloatArraySize   
+
+      ! -- Delete the array with the given ID
+
+      SUBROUTINE SMALocalIntArrayDelete(ID)           
+           INTEGER, INTENT(IN) :: ID        
+      END SUBROUTINE SMALocalIntArrayDelete
+
+      ! -- Delete the array with the given ID
+
+      SUBROUTINE SMALocalFloatArrayDelete(ID)
+          INTEGER, INTENT(IN) :: ID                  
+      END SUBROUTINE SMALocalFloatArrayDelete
+
+      END INTERFACE
+
+
+
