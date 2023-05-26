@@ -22,5 +22,5 @@ The user entries are given in userinputs.f / useroutputs.f / usermaterial.f file
 
 
 Video Tutorials
-1. Single crystal uniaxial test: https://www.youtube.com/
+1. Single crystal uniaxial test: https://youtu.be/ROUrg3TN0P4
 
