@@ -19,3 +19,9 @@ PROPS(6): "0" for using usermaterials.f / "1" for manual entry to PROPS
 
 
 The user entries are given in userinputs.f / useroutputs.f / usermaterial.f files
+
+
+Video Tutorials
+1. Single crystal uniaxial
+https://www.youtube.com/
+
