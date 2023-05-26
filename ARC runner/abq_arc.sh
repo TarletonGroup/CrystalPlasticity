@@ -15,5 +15,5 @@ module load iimpi/2020a
 
 . abaqus.sh
 
-
-abaqus input=Job-1.inp job=AbaqusJob user=DBFcode.f cpus=${SLURM_NTASKS} interactive
+abaqus fetch job=Job-1.inp
+abaqus input=Job-1.inp job=AbaqusJob user=DBFcode.for cpus=${SLURM_NTASKS} interactive
