@@ -26,7 +26,7 @@ Video Tutorials
 
 2. Dream3D2Abaqus polycrytal plasticity: https://youtu.be/s0r0Tgjc7Io
    
-3.a. Neper polycrystal mesh generation: https://youtu.be/zAH1m9wIT_4
+ 3.a. Neper polycrystal mesh generation: https://youtu.be/zAH1m9wIT_4
 
-3.b. Neper2Abaqus polycrystal plasticity: https://youtu.be/FfixSufVZ30
+ 3.b. Neper2Abaqus polycrystal plasticity: https://youtu.be/FfixSufVZ30
 
