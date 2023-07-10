@@ -74,7 +74,7 @@
 !
 !     14th State-variable output / number of outputs: maxnslip*2
 !     Geometrically Necessary Dislocation Density: statev_gnd
-      data statev_outputs(14) / 1 /
+      data statev_outputs(14) / 0 /
 !
 !     15th State-variable output / number of outputs: maxnslip
 !     Foresty Dislocation Density: statev_forest
