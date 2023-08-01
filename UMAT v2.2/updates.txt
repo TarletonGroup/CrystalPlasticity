@@ -1,0 +1,2 @@
+updates with respect to v2.1
+- The variable "ipdomain" for IP domain size (area or volume) is added
