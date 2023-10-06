@@ -1,0 +1,17 @@
+#creating 30 grains with euler angles
+$ neper -T -n 30 -morpho gg -ori random -oriformat plain -oridescriptor e -o gene_mult_3
+
+# Visualize the tesselation
+$ neper -V gene_mult_3.tess -datacellcol id -print Image_1
+
+#create abaqus input file with hexagonal elements and continuous grain boundaries
+$ neper -M gene_mult_3.tess -statelset vol -rcl 1 -elttype hex -order 1 -interface continuous -format inp -o abq_hex -format msh
+
+# Visualize the mesh
+$ neper -V abq_hex.msh -dataelsetcol id -print Image_3
+
+#create abaqus input file with hexagonal elements and continuous grain boundaries
+$ neper -M gene_mult_3.tess -statelset vol -rcl 1 -elttype tet -order 1 -interface continuous -format inp -o abq_tet -format msh
+
+# Visualize the mesh
+$ neper -V abq_tet.msh -dataelsetcol id -print Image_2
