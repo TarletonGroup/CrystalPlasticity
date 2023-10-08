@@ -1,0 +1,14 @@
+updates with respect to v2.1
+- The variable "ipdomain" for IP domain size (area or volume) is added
+************************************************
+updates with respect to v2.2
+- C3D8R element type is added (no GND calculation is possible)
+************************************************
+updates with respect to v2.3
+- UMAT.f: The gradient calculaiton for elements with 1-int. points are eliminated from the solution
+- creep.f: Dp is reset to zero
+- globalvariables.f: nogradient flag is introduced for elements without enough number of integration points
+- meshprop.f: C3D6 gradient calculation is avoided
+- initializations.f: when using PROPS as the entry, material-ID is defined for which two different materials with the same phases can be present (noted by Guofeng)
+- backstress.f: local Armstrong-Frederick backstress model is added
+- useroutoutputs.f: backstress outputs are rearranged for per slip system outputs
