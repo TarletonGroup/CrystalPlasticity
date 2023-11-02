@@ -13,7 +13,7 @@ PROPS(3): phi2 - 3rd Bunge angle
 
 PROPS(4): grain-ID
 
-PROPS(5): phase/material-ID
+PROPS(5): material-ID
 
 PROPS(6): "0" for using usermaterials.f / "1" for manual entry to PROPS
 
