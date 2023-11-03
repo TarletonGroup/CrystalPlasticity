@@ -32,7 +32,10 @@ Video Tutorials
 
 
 References for the solver
+
 https://doi.org/10.1016/j.ijplas.2006.10.013
+
 https://doi.org/10.1016/j.ijmecsci.2009.03.005
+
 https://doi.org/10.1016/j.ijplas.2023.103773
 
