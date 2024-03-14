@@ -1,0 +1,65 @@
+updates with respect to v2.1
+- The variable "ipdomain" for IP domain size (area or volume) is added
+************************************************
+updates with respect to v2.2
+- C3D8R element type is added (no GND calculation is possible)
+************************************************
+updates with respect to v2.3
+- UMAT.f: The gradient calculaiton for elements with 1-int. points are eliminated from the solution
+- creep.f: Dp is reset to zero
+- globalvariables.f: nogradient flag is introduced for elements without enough number of integration points
+- meshprop.f: C3D6 gradient calculation is avoided
+- initializations.f: when using PROPS as the entry, material-ID is defined for which two different materials with the same phases can be present (noted by Guofeng)
+- backstress.f: local Armstrong-Frederick backstress model is added
+- useroutoutputs.f: backstress outputs are rearranged for per slip system outputs
+************************************************
+updates with respect to v2.5
+- backstress.f: backstress model-2 calculation is updated to account for the sign of gammasum
+- userinputs.f: the values of quadprec and phi are set to zero
+- hardening.f: Hardening model-4 burgers vector is included as as multiplier to the substructure hardening
+- hardening.f: Hardening model-4 "drhosub" term added over slip systems
+- hardening.f: Hardening model-3 and 4 k1 term is divided by burgers vector
+- cpsolver.f: the sign of gammasum is preserved due to the backstress calculations
+- UMAT.f: if statement is added before GND calculations
+- BUG-FIX - backstress.f: line-88 phaseid is corrected to materialid
+- cpsolver.f: iterno<maxniter instead of iterno<=maxniter for both explicit and semi-implicit calculations
+- cpsolver.f: added oiter==maxniter divergence criteria for semi-implicit case
+- cpsolver.f: semi-implicit state update, the hardening function is called for the updated value of states (not for *_t)
+- UMAT.f: gradient operator only calculated at the first step (KSTEP==1)
+************************************************
+updates with respect to v2.6
+- cpsolver.f / innerloop.f / reverseslip.f: inverse method is added as a major update
+- useroutputs.f: the variable used for the outputs of GND and backstress belong to the former time step
+************************************************
+updates with respect to v2.7
+- hardening.f / crss.f / initialization.f / usermaterial.f : hardening model-4 is modified for direct definition of "k2"
+- cpsolver.f / innerloop.f: inversion of Fp is modified
+- cpsolver.f / innerloop.f: if statement incase of divergence, has been abbreviated
+************************************************
+updates with respect to v2.8
+- initialization.f - line 1355: abs(res)>0.99
+- usermaterials.f - tungsten properties in case(4) are updated
+- useroutputs.f - total GND density is added as another output
+- materials.vox file can be optionally used for in-grain orientation scatter
+- the earlier change in v2.5 that is "semi-implicit state update, the hardening function is called for the updated value of states (not for *_t)" reverted back to original
+- cpsolver.f - line 535: NSij(i,j) changed to NSij(j,i)
+************************************************
+updates with respect to v2.9
+- meshprop.f - C3D15 integration weights are added
+- meshprop.f - C3D15 ip coordinates are corrected, ordering was wrong
+- initializations.f - in allocation of one of the array is corrected to linc_0_all(maxnmaterial,maxnslip*2,3)
+- innerloop.f - line 263: a check for the slip rates becoming NaN is placed.
+- innerloop.f - line 173: a statement is added to end the inner loop in case of "no convergence"
+- several locations: hardening model of Vikram Phalke (UKAEA) is included
+************************************************
+updates with respect to v2.10
+- hardening.f - line 434: the hardening model-5 is correct, softening effect is taken out of the loop
+- initializations.f - line 661/662: initial total density is corrected to have the sum over the slip systems
+- initializations.f - (formerly) line 1403-1418: removed, causes uneven evolution of densities
+- cpsolver.f - line 116/199: data statements are removed for those flags
+************************************************
+updates with respect to v2.11
+- all data statements except slip systems are removed
+- cpsolver.f - various places: gammadot==inf cases are handled
+- element number and element type entries are avoided (automatically performed)
+- in the first entry - no calculations are performed, time cut-back is applied
