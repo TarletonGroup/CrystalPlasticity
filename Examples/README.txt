@@ -9,3 +9,5 @@ To run the input files for all of the examples:
 
 3. Using the Job properties, add the "OXFORD-UMAT.f" file as the user subroutine file
 
+4. Run
+
