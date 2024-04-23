@@ -40,7 +40,7 @@
      + hardeningmodel_all, hardeningparam_all, irradiationmodel_all,
      + irradiationparam_all, backstressparam_all, slip2screw_all,
      + statev_backstress_t, statev_backstress, statev_plasdiss_t,
-     + statev_plasdiss, statev_tauceff, statev_tauceff_t, 
+     + statev_plasdiss, statev_tauceff,
      + I3, I6, smallnum
 !
       use userinputs, only: constanttemperature, temperature,
@@ -318,7 +318,7 @@
 !
 !     Trial stress calculation
 !     trial stress
-      real(8) ::  sigmatr(6)
+      real(8) :: sigmatr(6)
 !
 !     Backstress at current time
       real(8) :: X(numslip_all(matid))
@@ -336,7 +336,7 @@
 !
 !     Resolved shear stress calculation
 !     GUESS values
-      real(8) ::  sigma0(6), jacobi0(6,6)
+      real(8) :: sigma0(6), jacobi0(6,6)
 !     value of resolved shear stress
       real(8) :: tau0(numslip_all(matid))
 !
@@ -451,8 +451,6 @@
       gmatinv_t = statev_gmatinv_t(noel,npt,:,:)
 !     Backstress at former time step
       X_t = statev_backstress_t(noel,npt,1:nslip)
-!     Overall CRSS
-      tauceff_t = statev_tauceff_t(noel,npt,1:nslip)
 !
 !
 !     Material parameters are constant

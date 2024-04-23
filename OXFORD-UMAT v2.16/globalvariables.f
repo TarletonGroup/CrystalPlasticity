@@ -211,8 +211,6 @@
 !
 !     Effective critical resolved shear stress at current time step
       real(8), allocatable, public :: statev_tauceff(:,:,:)
-!     Effecitve critical resolved shear stress at former time step
-      real(8), allocatable, public :: statev_tauceff_t(:,:,:)
 !
 !
 !     Total cumulative slip at current time step

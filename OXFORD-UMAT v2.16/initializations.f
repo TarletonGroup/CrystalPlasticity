@@ -148,7 +148,7 @@
      + statev_substructure, statev_substructure_t, 
      + statev_tausolute, statev_tausolute_t,
      + statev_loop, statev_loop_t,
-     + statev_tauceff, statev_tauceff_t,
+     + statev_tauceff,
      + statev_gnd_0,
      + caratio_all, cubicslip_all,
      + Cc_all, gf_all, G12_all, v12_all,
@@ -896,7 +896,6 @@
      + mattemp, tauceff_0(1:nslip))
 !
 !
-      statev_tauceff_t(noel,npt,1:maxnslip)=tauceff_0
       statev_tauceff(noel,npt,1:maxnslip)=tauceff_0
 !
 !
@@ -936,7 +935,7 @@
      + hintmat1_all, hintmat2_all,
      + backstressparam_all, statev_backstress_t,
      + statev_backstress, statev_plasdiss_t,
-     + statev_plasdiss, statev_tauceff, statev_tauceff_t
+     + statev_plasdiss, statev_tauceff
 !
       use userinputs, only : maxnslip, maxnparam,
      + maxnmaterial, maxnloop
@@ -1092,8 +1091,6 @@
 !
       allocate(statev_tauceff(numel,numpt,maxnslip))
       statev_tauceff=0.
-      allocate(statev_tauceff_t(numel,numpt,maxnslip))
-      statev_tauceff_t=0.
 !
       allocate(statev_maxx(numel,numpt))
       statev_maxx=0.

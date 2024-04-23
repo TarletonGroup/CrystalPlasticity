@@ -65,8 +65,7 @@
      + statev_Lambda_t, statev_Lambda, statev_sigma_t2,
      + statev_tausolute_t, statev_tausolute, time_old, dt_t,
      + statev_backstress, statev_backstress_t,
-     + statev_plasdiss, statev_plasdiss_t,
-     + statev_tauceff, statev_tauceff_t, 
+     + statev_plasdiss, statev_plasdiss_t, 
      + ip_count, calculategradient, ip_init, grad_init
 !
       use straingradients, only: gndmodel1, gndmodel2, 
@@ -352,7 +351,6 @@
           statev_Lambda_t(:,:,:) = statev_Lambda(:,:,:)
           statev_backstress_t(:,:,:) = statev_backstress(:,:,:)
           statev_plasdiss_t(:,:) = statev_plasdiss(:,:)
-          statev_tauceff_t(:,:,:) = statev_tauceff(:,:,:)
 !
           write(*,*) 'States are updated!'
 !
