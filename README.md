@@ -40,3 +40,6 @@ https://doi.org/10.1016/j.ijmecsci.2009.03.005
 
 https://doi.org/10.1016/j.ijplas.2023.103773
 
+Reference for GND calculation
+
+https://doi.org/10.1016/j.ijplas.2024.104013
