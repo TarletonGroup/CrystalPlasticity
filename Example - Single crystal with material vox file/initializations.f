@@ -104,7 +104,7 @@
           do iele=1,numel
 !
               dummy=0.
-              read(100,*) dummy(1:8)
+              read(200,*) dummy(1:8)
 !
 !             Bunge angles in degrees
               Euler(iele,1) = dummy(1)
