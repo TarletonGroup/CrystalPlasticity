@@ -1381,7 +1381,7 @@ _PICKEDSET14, ENCASTRE
 ** 
 *Step, name=Step-1, nlgeom=YES, inc=10000
 *Static
-0.1, 70., 1e-05, 5.
+0.1, 66.7, 1e-05, 5.
 ** 
 ** BOUNDARY CONDITIONS
 ** 
