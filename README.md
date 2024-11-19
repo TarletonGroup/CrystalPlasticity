@@ -1,7 +1,7 @@
 # CrystalPlasticity
-CP UMAT and CZM UEL for Abaqus
+CP UMAT and CZM UEL for Abaqus full details in: https://doi.org/10.1016/j.ijsolstr.2024.113110 
 
-The most updated version of single crystal solver
+The latest version of single crystal solver
 
 Inputs (PROPS)
 
