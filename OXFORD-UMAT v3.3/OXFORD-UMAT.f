@@ -1,5 +1,5 @@
 ! OXFORD-UMAT - Crystal Plasticity Solver
-! November 25th, 2025 - Release v3.2
+! December 18th, 2025 - Release v3.3
 ! November 1st, 2022 - 1st working version
 !
 ! Crystal Plasticity UMAT
@@ -8,7 +8,6 @@
 !
 ! Sponsored by Design-by-Fundamentals (DbF) project under STEP program of UKAEA
 !
-! Rewrite of UMAT by Ed Tarleton and Nicolo Grilli
 ! Originally based on the UEL by Fionn Dunne 2007
 ! Deformation twinning is not included
 !
@@ -304,4 +303,5 @@
 !
 !
       RETURN
+
       END SUBROUTINE UMAT
