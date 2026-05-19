@@ -150,10 +150,10 @@ def Dream3D2Abaqus(filename,matID,noDepvar):
         # "1": use the material parameters in excel file              
 
         else:
-            A = [""] * 300
+            A = [""] * 175
 
             A[5] = 1
-            noPROPS = 300
+            noPROPS = 175
 
         
         
@@ -175,15 +175,13 @@ def Dream3D2Abaqus(filename,matID,noDepvar):
             if A16[5] ==1:
                 for iph in uniPhases:
                     letter = chr(iph + 64)
-                    xlRange = f"{letter}1:{letter}300"#CHANGE
-                    df = pd.read_excel("PROPS.xlsx", sheet_name='Material_parameters', usecols="A", header=None)
-                    B = np.array(df.iloc[0:301, :]).flatten()
+                    df = pd.read_excel("PROPS.xlsx", sheet_name='Material_parameters', usecols=letter, header=None)
+                    B = np.array(df.iloc[0:175, :]).flatten()
                     #print(B)
                     #B=tolist(B)
                     
-                    nslip = B[6]
                     # All parameters
-                    A[6:301] = B[6:301]
+                    A[6:175] = B[6:175]
                     
 
             #print(A)
@@ -207,4 +205,4 @@ def Dream3D2Abaqus(filename,matID,noDepvar):
     return  
 
 
- 
+Dream3D2Abaqus("testcase",2,12)
