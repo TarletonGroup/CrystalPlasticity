@@ -20,8 +20,9 @@ PROPS(6): "0" for using usermaterials.f / "1" for manual entry to PROPS
 
 The user entries are given in userinputs.f / useroutputs.f / usermaterial.f files
 
+<br/>
 
-Video Tutorials
+# Video Tutorials
 1. Single crystal uniaxial test: https://youtu.be/T1bCw61qMLw
 
 2. Dream3D2Abaqus polycrytal plasticity: https://youtu.be/s0r0Tgjc7Io
@@ -36,7 +37,7 @@ Video Tutorials
 
 
 
-References for the solver:
+# References for the solver:
 
 https://doi.org/10.1016/j.ijplas.2006.10.013
 
