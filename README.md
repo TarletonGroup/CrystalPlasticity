@@ -3,7 +3,7 @@ CP UMAT and CZM UEL for Abaqus full details in: https://doi.org/10.1016/j.ijsols
 
 The latest version of single crystal solver
 
-Inputs (PROPS)
+##Inputs (PROPS)
 
 PROPS(1): phi1 - 1st Bunge angle
 
@@ -22,7 +22,7 @@ The user entries are given in userinputs.f / useroutputs.f / usermaterial.f file
 
 <br/>
 
-# Video Tutorials
+##Video Tutorials
 1. Single crystal uniaxial test: https://youtu.be/T1bCw61qMLw
 
 2. Dream3D2Abaqus polycrytal plasticity: https://youtu.be/s0r0Tgjc7Io
@@ -37,7 +37,7 @@ The user entries are given in userinputs.f / useroutputs.f / usermaterial.f file
 
 
 
-# References for the solver:
+##References for the solver:
 
 https://doi.org/10.1016/j.ijplas.2006.10.013
 
