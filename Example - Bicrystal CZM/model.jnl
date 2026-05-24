@@ -1,0 +1,357 @@
+# -*- coding: mbcs -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.JobFromInputFile(atTime=None, explicitPrecision=SINGLE, 
+    getMemoryFromAnalysis=True, inputFileName=
+    'C:\\Users\\engs2474\\Documents\\Eralp\\Oxford\\UMAT\\Example - Bicrystal CZM\\Job_coh.inp'
+    , memory=90, memoryUnits=PERCENTAGE, multiprocessingMode=DEFAULT, name=
+    'Job_coh', nodalOutputPrecision=SINGLE, numCpus=1, numGPUs=0, queue=None, 
+    resultsFormat=ODB, scratch=
+    'C:\\Users\\engs2474\\Documents\\Eralp\\Oxford\\UMAT\\Example - Bicrystal CZM'
+    , type=ANALYSIS, userSubroutine=
+    'C:\\Users\\engs2474\\Documents\\Eralp\\Oxford\\UMAT\\Example - Bicrystal CZM\\OXFORD-UMAT.f'
+    , waitHours=0, waitMinutes=0)
+mdb.jobs['Job_coh'].submit(consistencyChecking=OFF)
+mdb.jobs['Job_coh']._Message(STARTED, {'phase': BATCHPRE_PHASE, 
+    'clientHost': 'engs-30093', 'handle': 0, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(WARNING, {'phase': BATCHPRE_PHASE, 
+    'message': 'THE *ELEMENT OUTPUT OPTION IS NOT SUPPORTED FOR USER ELEMENTS', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ODB_FILE, {'phase': BATCHPRE_PHASE, 
+    'file': 'C:\\Users\\engs2474\\Documents\\Eralp\\Oxford\\UMAT\\Example - Bicrystal CZM\\Job_coh.odb', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(COMPLETED, {'phase': BATCHPRE_PHASE, 
+    'message': 'Analysis phase complete', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STARTED, {'phase': STANDARD_PHASE, 
+    'clientHost': 'engs-30093', 'handle': 1552, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STEP, {'phase': STANDARD_PHASE, 'stepId': 1, 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 0, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(MEMORY_ESTIMATE, {'phase': STANDARD_PHASE, 
+    'jobName': 'Job_coh', 'memory': 24.0})
+mdb.jobs['Job_coh']._Message(PHYSICAL_MEMORY, {'phase': STANDARD_PHASE, 
+    'physical_memory': 65225.0, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(MINIMUM_MEMORY, {'minimum_memory': 17.0, 
+    'phase': STANDARD_PHASE, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(WARNING, {'phase': STANDARD_PHASE, 
+    'message': 'The system matrix has 18 negative eigenvalues.', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0, 'attempts': ' 1U', 
+    'timeIncrement': 0.01, 'increment': 1, 'stepTime': 0.0, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 1, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.005, 'attempts': 2, 
+    'timeIncrement': 0.005, 'increment': 1, 'stepTime': 0.005, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 2, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.01, 'attempts': 1, 
+    'timeIncrement': 0.005, 'increment': 2, 'stepTime': 0.01, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 3, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0175, 'attempts': 1, 
+    'timeIncrement': 0.0075, 'increment': 3, 'stepTime': 0.0175, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 4, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.02875, 'attempts': 1, 
+    'timeIncrement': 0.01125, 'increment': 4, 'stepTime': 0.02875, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 5, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.045625, 'attempts': 1, 
+    'timeIncrement': 0.016875, 'increment': 5, 'stepTime': 0.045625, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 6, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0709375, 'attempts': 1, 
+    'timeIncrement': 0.0253125, 'increment': 6, 'stepTime': 0.0709375, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 7, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.10890625, 'attempts': 1, 
+    'timeIncrement': 0.03796875, 'increment': 7, 'stepTime': 0.10890625, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 2, 
+    'phase': STANDARD_PHASE, 'equilibrium': 2})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 8, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.165859375, 'attempts': 1, 
+    'timeIncrement': 0.056953125, 'increment': 8, 'stepTime': 0.165859375, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 3, 
+    'phase': STANDARD_PHASE, 'equilibrium': 3})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 9, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.2512890625, 'attempts': 1, 
+    'timeIncrement': 0.0854296875, 'increment': 9, 'stepTime': 0.2512890625, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 10, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.37943359375, 
+    'attempts': 1, 'timeIncrement': 0.12814453125, 'increment': 10, 
+    'stepTime': 0.37943359375, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 11, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.571650390625, 
+    'attempts': 1, 'timeIncrement': 0.192216796875, 'increment': 11, 
+    'stepTime': 0.571650390625, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 12, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.8599755859375, 
+    'attempts': 1, 'timeIncrement': 0.2883251953125, 'increment': 12, 
+    'stepTime': 0.8599755859375, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 13, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 1.29246337890625, 
+    'attempts': 1, 'timeIncrement': 0.43248779296875, 'increment': 13, 
+    'stepTime': 1.29246337890625, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 2, 'phase': STANDARD_PHASE, 'equilibrium': 2})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 1.29246337890625, 
+    'attempts': ' 1U', 'timeIncrement': 0.648731689453125, 'increment': 14, 
+    'stepTime': 1.29246337890625, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 9, 'phase': STANDARD_PHASE, 'equilibrium': 9})
+mdb.jobs['Job_coh']._Message(WARNING, {'phase': STANDARD_PHASE, 
+    'message': 'FORCE equilibrium accepted using the alternate tolerance.', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 14, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 1.45464630126953, 
+    'attempts': 2, 'timeIncrement': 0.162182922363281, 'increment': 14, 
+    'stepTime': 1.45464630126953, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 12, 'phase': STANDARD_PHASE, 'equilibrium': 12})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 15, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 1.57628349304199, 
+    'attempts': 1, 'timeIncrement': 0.121637191772461, 'increment': 15, 
+    'stepTime': 1.57628349304199, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 5, 'phase': STANDARD_PHASE, 'equilibrium': 5})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 16, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 1.69792068481445, 
+    'attempts': 1, 'timeIncrement': 0.121637191772461, 'increment': 16, 
+    'stepTime': 1.69792068481445, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 2, 'phase': STANDARD_PHASE, 'equilibrium': 2})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 17, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 1.81955787658691, 
+    'attempts': 1, 'timeIncrement': 0.121637191772461, 'increment': 17, 
+    'stepTime': 1.81955787658691, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 2, 'phase': STANDARD_PHASE, 'equilibrium': 2})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 18, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 2.00201366424561, 
+    'attempts': 1, 'timeIncrement': 0.182455787658691, 'increment': 18, 
+    'stepTime': 2.00201366424561, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 2, 'phase': STANDARD_PHASE, 'equilibrium': 2})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 19, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 2.27569734573364, 
+    'attempts': 1, 'timeIncrement': 0.273683681488037, 'increment': 19, 
+    'stepTime': 2.27569734573364, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 2, 'phase': STANDARD_PHASE, 'equilibrium': 2})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 20, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 2.6862228679657, 
+    'attempts': 1, 'timeIncrement': 0.410525522232056, 'increment': 20, 
+    'stepTime': 2.6862228679657, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 3, 'phase': STANDARD_PHASE, 'equilibrium': 3})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 21, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 3.30201115131378, 
+    'attempts': 1, 'timeIncrement': 0.615788283348084, 'increment': 21, 
+    'stepTime': 3.30201115131378, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 4, 'phase': STANDARD_PHASE, 'equilibrium': 4})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 22, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 4.22569357633591, 
+    'attempts': 1, 'timeIncrement': 0.923682425022125, 'increment': 22, 
+    'stepTime': 4.22569357633591, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 3, 'phase': STANDARD_PHASE, 'equilibrium': 3})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 23, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 5.6112172138691, 
+    'attempts': 1, 'timeIncrement': 1.38552363753319, 'increment': 23, 
+    'stepTime': 5.6112172138691, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 24, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 7.68950267016888, 
+    'attempts': 1, 'timeIncrement': 2.07828545629978, 'increment': 24, 
+    'stepTime': 7.68950267016888, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 25, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 10.0, 'attempts': 1, 
+    'timeIncrement': 2.31049732983112, 'increment': 25, 'stepTime': 10.0, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(END_STEP, {'phase': STANDARD_PHASE, 'stepId': 1, 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(COMPLETED, {'phase': STANDARD_PHASE, 
+    'message': 'Analysis phase complete', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(JOB_COMPLETED, {
+    'time': 'Sun May 24 13:39:26 2026', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh'].submit(consistencyChecking=OFF)
+mdb.jobs['Job_coh']._Message(STARTED, {'phase': BATCHPRE_PHASE, 
+    'clientHost': 'engs-30093', 'handle': 0, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ERROR, {'phase': BATCHPRE_PHASE, 
+    'message': 'INVALID FLOAT VALUE', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(WARNING, {'phase': BATCHPRE_PHASE, 
+    'message': 'THE *ELEMENT OUTPUT OPTION IS NOT SUPPORTED FOR USER ELEMENTS', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ERROR, {'phase': BATCHPRE_PHASE, 
+    'message': 'INVALID FLOAT VALUE', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ODB_FILE, {'phase': BATCHPRE_PHASE, 
+    'file': 'C:\\Users\\engs2474\\Documents\\Eralp\\Oxford\\UMAT\\Example - Bicrystal CZM\\Job_coh.odb', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ABORTED, {'phase': BATCHPRE_PHASE, 
+    'message': 'Analysis phase failed due to errors', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ERROR, {
+    'message': 'Analysis Input File Processor exited with an error.', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(JOB_ABORTED, {
+    'message': 'Analysis Input File Processor exited with an error.', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh'].submit(consistencyChecking=OFF)
+mdb.jobs['Job_coh']._Message(STARTED, {'phase': BATCHPRE_PHASE, 
+    'clientHost': 'engs-30093', 'handle': 0, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(WARNING, {'phase': BATCHPRE_PHASE, 
+    'message': 'THE *ELEMENT OUTPUT OPTION IS NOT SUPPORTED FOR USER ELEMENTS', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ODB_FILE, {'phase': BATCHPRE_PHASE, 
+    'file': 'C:\\Users\\engs2474\\Documents\\Eralp\\Oxford\\UMAT\\Example - Bicrystal CZM\\Job_coh.odb', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(COMPLETED, {'phase': BATCHPRE_PHASE, 
+    'message': 'Analysis phase complete', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STARTED, {'phase': STANDARD_PHASE, 
+    'clientHost': 'engs-30093', 'handle': 74388, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STEP, {'phase': STANDARD_PHASE, 'stepId': 1, 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 0, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(MEMORY_ESTIMATE, {'phase': STANDARD_PHASE, 
+    'jobName': 'Job_coh', 'memory': 24.0})
+mdb.jobs['Job_coh']._Message(PHYSICAL_MEMORY, {'phase': STANDARD_PHASE, 
+    'physical_memory': 65225.0, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(MINIMUM_MEMORY, {'minimum_memory': 17.0, 
+    'phase': STANDARD_PHASE, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(WARNING, {'phase': STANDARD_PHASE, 
+    'message': 'The system matrix has 18 negative eigenvalues.', 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0, 'attempts': ' 1U', 
+    'timeIncrement': 0.005, 'increment': 1, 'stepTime': 0.0, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0, 'attempts': ' 2U', 
+    'timeIncrement': 0.0025, 'increment': 1, 'stepTime': 0.0, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0, 'attempts': ' 3U', 
+    'timeIncrement': 0.00125, 'increment': 1, 'stepTime': 0.0, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0, 'attempts': ' 4U', 
+    'timeIncrement': 0.000625, 'increment': 1, 'stepTime': 0.0, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 3, 
+    'phase': STANDARD_PHASE, 'equilibrium': 3})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0, 'attempts': ' 5U', 
+    'timeIncrement': 0.0003125, 'increment': 1, 'stepTime': 0.0, 'step': 1, 
+    'jobName': 'Job_coh', 'severe': 0, 'iterations': 4, 
+    'phase': STANDARD_PHASE, 'equilibrium': 4})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 1, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.00015625, 'attempts': 6, 
+    'timeIncrement': 0.00015625, 'increment': 1, 'stepTime': 0.00015625, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 7, 
+    'phase': STANDARD_PHASE, 'equilibrium': 7})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 2, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0003125, 'attempts': 1, 
+    'timeIncrement': 0.00015625, 'increment': 2, 'stepTime': 0.0003125, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 4, 
+    'phase': STANDARD_PHASE, 'equilibrium': 4})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 3, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.00046875, 'attempts': 1, 
+    'timeIncrement': 0.00015625, 'increment': 3, 'stepTime': 0.00046875, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 2, 
+    'phase': STANDARD_PHASE, 'equilibrium': 2})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 4, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.000703125, 'attempts': 1, 
+    'timeIncrement': 0.000234375, 'increment': 4, 'stepTime': 0.000703125, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 5, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0010546875, 'attempts': 1, 
+    'timeIncrement': 0.0003515625, 'increment': 5, 'stepTime': 0.0010546875, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 6, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.00158203125, 
+    'attempts': 1, 'timeIncrement': 0.00052734375, 'increment': 6, 
+    'stepTime': 0.00158203125, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 7, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.002373046875, 
+    'attempts': 1, 'timeIncrement': 0.000791015625, 'increment': 7, 
+    'stepTime': 0.002373046875, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 8, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.0035595703125, 
+    'attempts': 1, 'timeIncrement': 0.0011865234375, 'increment': 8, 
+    'stepTime': 0.0035595703125, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 9, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.00533935546875, 
+    'attempts': 1, 'timeIncrement': 0.00177978515625, 'increment': 9, 
+    'stepTime': 0.00533935546875, 'step': 1, 'jobName': 'Job_coh', 'severe': 0, 
+    'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 10, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.008009033203125, 
+    'attempts': 1, 'timeIncrement': 0.002669677734375, 'increment': 10, 
+    'stepTime': 0.008009033203125, 'step': 1, 'jobName': 'Job_coh', 
+    'severe': 0, 'iterations': 1, 'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(ODB_FRAME, {'phase': STANDARD_PHASE, 'step': 0, 
+    'frame': 11, 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(STATUS, {'totalTime': 0.01, 'attempts': 1, 
+    'timeIncrement': 0.001990966796875, 'increment': 11, 'stepTime': 0.01, 
+    'step': 1, 'jobName': 'Job_coh', 'severe': 0, 'iterations': 1, 
+    'phase': STANDARD_PHASE, 'equilibrium': 1})
+mdb.jobs['Job_coh']._Message(END_STEP, {'phase': STANDARD_PHASE, 'stepId': 1, 
+    'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(COMPLETED, {'phase': STANDARD_PHASE, 
+    'message': 'Analysis phase complete', 'jobName': 'Job_coh'})
+mdb.jobs['Job_coh']._Message(JOB_COMPLETED, {
+    'time': 'Sun May 24 14:27:23 2026', 'jobName': 'Job_coh'})
+# Save by engs2474 on 2026_05_24-14.53.17; build 2021 2020_03_06-14.50.37 167380
