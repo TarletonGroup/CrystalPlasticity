@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE Xdmf SYSTEM "Xdmf.dtd"[]>
+<Xdmf xmlns:xi="http://www.w3.org/2003/XInclude" Version="2.2">
+ <Domain>
+  <!-- *************** START OF SyntheticVolumeDataContainer *************** -->
+  <Grid Name="SyntheticVolumeDataContainer" GridType="Uniform">
+    <Topology TopologyType="3DCoRectMesh" Dimensions="11 11 11 "></Topology>
+    <Geometry Type="ORIGIN_DXDYDZ">
+      <!-- Origin  Z, Y, X -->
+      <DataItem Format="XML" Dimensions="3">0 0 0</DataItem>
+      <!-- DxDyDz (Spacing/Resolution) Z, Y, X -->
+      <DataItem Format="XML" Dimensions="3">1 1 1</DataItem>
+    </Geometry>
+    <Attribute Name="BoundaryCells" AttributeType="Scalar" Center="Cell">
+      <DataItem Format="HDF" Dimensions="10 10 10 1" NumberType="Char" Precision="1" >
+        testcase_.dream3d:/DataContainers/SyntheticVolumeDataContainer/CellData/BoundaryCells
+      </DataItem>
+    </Attribute>
+    <Attribute Name="EulerAngles" AttributeType="Vector" Center="Cell">
+      <DataItem Format="HDF" Dimensions="10 10 10 3" NumberType="Float" Precision="4" >
+        testcase_.dream3d:/DataContainers/SyntheticVolumeDataContainer/CellData/EulerAngles
+      </DataItem>
+    </Attribute>
+    <Attribute Name="FeatureIds" AttributeType="Scalar" Center="Cell">
+      <DataItem Format="HDF" Dimensions="10 10 10 1" NumberType="Int" Precision="4" >
+        testcase_.dream3d:/DataContainers/SyntheticVolumeDataContainer/CellData/FeatureIds
+      </DataItem>
+    </Attribute>
+    <Attribute Name="GBManhattanDistances" AttributeType="Scalar" Center="Cell">
+      <DataItem Format="HDF" Dimensions="10 10 10 1" NumberType="Int" Precision="4" >
+        testcase_.dream3d:/DataContainers/SyntheticVolumeDataContainer/CellData/GBManhattanDistances
+      </DataItem>
+    </Attribute>
+    <Attribute Name="IPFColor" AttributeType="Vector" Center="Cell">
+      <DataItem Format="HDF" Dimensions="10 10 10 3" NumberType="UChar" Precision="1" >
+        testcase_.dream3d:/DataContainers/SyntheticVolumeDataContainer/CellData/IPFColor
+      </DataItem>
+    </Attribute>
+    <Attribute Name="Phases" AttributeType="Scalar" Center="Cell">
+      <DataItem Format="HDF" Dimensions="10 10 10 1" NumberType="Int" Precision="4" >
+        testcase_.dream3d:/DataContainers/SyntheticVolumeDataContainer/CellData/Phases
+      </DataItem>
+    </Attribute>
+  </Grid>
+  <!-- *************** END OF SyntheticVolumeDataContainer *************** -->
+ </Domain>
+</Xdmf>
