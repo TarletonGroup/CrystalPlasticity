@@ -30,7 +30,7 @@ Video Tutorials
 
 3.b. Neper2Abaqus polycrystal plasticity: https://youtu.be/FfixSufVZ30
 
-4. Cohesive Zone Modelling:<br/>
+4. Cohesive Zone Modelling:\
 
 
 
