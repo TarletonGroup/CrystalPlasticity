@@ -31,8 +31,12 @@ The user entries are given in userinputs.f / useroutputs.f / usermaterial.f file
 
 3.b. Neper2Abaqus polycrystal plasticity: https://youtu.be/FfixSufVZ30
 
-4. Cohesive Zone Modelling:
-
+4. Cohesive Zone Modelling in ABAQUS with UEL:
+   
+   Part-1 Description: https://www.youtube.com/watch?v=7VbcahXzOxI&t=34s
+   
+   Part-2 Application to CPFEM: https://www.youtube.com/watch?v=4TB8LpTdhU8&t=9s
+   
 <br/>
 
 
