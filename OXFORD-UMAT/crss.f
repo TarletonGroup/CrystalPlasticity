@@ -15,7 +15,7 @@
      + hardeningmodel, hardeningparam,
      + irradiationmodel,irradiationparam,
      + temperature,
-     + tauc)
+     + tauc, taus)
       use userinputs, only: useaveragestatevars,
      + maxnloop, maxnparam
       implicit none
@@ -77,6 +77,9 @@
 !
 !     current temperature
       real(8),intent(in) :: temperature
+!      
+!     Source strength
+      real(8),intent(in) :: taus(nslip)
 !
 !     critical resolved shear stress of slip systems
       real(8),intent(out) :: tauc(nslip)
@@ -237,15 +240,15 @@
 !
               do is = 1, nslip
 !
-!
+!                  
 !!                 Taylor strength - total density / backstress
 !                  tauc(is) = tauc0(is)  +
-!     + G12*burgerv(is)*dsqrt(gf**2.*rhotot(is) + Ploop(is)) 
+!     + G12*burgerv(is)*dsqrt(taus(is)/(G12*burgerv(is)))**2.+gf**2.*rhotot(is) + Ploop(is)) 
 !
 !
 !                 Taylor strength - forest spacing / cut-through
                   tauc(is) = tauc0(is)  +
-     + G12*burgerv(is)*dsqrt(gf**2.*rhofor(is) +
+     + G12*burgerv(is)*dsqrt((taus(is)/(G12*burgerv(is)))**2.+gf**2.*rhofor(is) +
      + Ploop(is) + gfp**2.*rhop*Dp)
 !
                   
@@ -264,13 +267,13 @@
 !
 !                 Taylor strength - total density
                   tauc(is) = tauc0(is) +
-     + G12*burgerv(is)*dsqrt(gf**2.*sumrhotot +
+     + G12*burgerv(is)*dsqrt((taus(is)/(G12*burgerv(is)))**2.+gf**2.*sumrhotot +
      + Ploop(is) + gfp**2.*rhop*Dp)
 !
 !
 !!                 Taylor strength - total density
 !                  tauc(is) = tauc0(is)*(1.-X) +
-!     + G12*burgerv(is)*dsqrt(X*tauc0(is)/G12/burgerv(is) +
+!     + G12*burgerv(is)*dsqrt(taus(is)/(G12*burgerv(is)))**2.+X*tauc0(is)/G12/burgerv(is) +
 !     + gf**2.*rhotot + Ploop(is))
 !
 !

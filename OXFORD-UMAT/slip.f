@@ -17,7 +17,7 @@
      + cubicslip,caratio,
      + Lp,Dp,Pmat,gammadot,
      + dgammadot_dtau,
-     + dgammadot_dtauc)
+     + dgammadot_dtauc,active)
 !
       use userinputs, only : useaveragestatevars, maxnparam
       use globalvariables, only : KB
@@ -56,6 +56,8 @@
       integer, intent(in) :: cubicslip
 !     c/a ratio for hcp materials
       real(8), intent(in) :: caratio
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !     plastic part of velocity gradient
       real(8), intent(out) :: Lp(3,3)
 !     plastic stretch rate at the deformed configuration
@@ -137,6 +139,7 @@
       Pmat=0.; Lp = 0.; Dp = 0.
 !     Loop through slip systems
       do is = 1,nslip
+          if (active(is) .EQ. 1.0) then
 !
 !         Absolute value of RSS
           abstau = abs(tau(is)-X(is))
@@ -278,6 +281,7 @@
 !
           end if
 !
+          end if
           end do
 !
 !      
@@ -310,7 +314,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,
      + Lp,Dp,Pmat,gammadot,dgammadot_dtau,
-     + dgammadot_dtauc)
+     + dgammadot_dtauc, active)
 !
       use userinputs, only : useaveragestatevars, maxnparam
       use globalvariables, only : KB, smallnum
@@ -346,6 +350,8 @@
       integer, intent(in) :: cubicslip
 !     c/a ratio for hcp materials
       real(8), intent(in) :: caratio
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !     plastic part of velocity gradient
       real(8), intent(out) :: Lp(3,3)
 !     plastic stretch rate at the deformed configuration
@@ -386,6 +392,7 @@
 !
 !     Contribution to Lp of all slip systems
       do is=1,nslip
+          if (active(is) .EQ. 1.) then
 !
 !
 !         Absolute value of RSS
@@ -455,6 +462,7 @@
 !         Update plastic velocity gradient
           Lp = Lp + gammadot(is)*Schmid(is,:,:)
 !
+      end if
       end do
 !     
 !
@@ -485,7 +493,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,
      + Lp,Dp,Pmat,gammadot,dgammadot_dtau,
-     + dgammadot_dtauc)
+     + dgammadot_dtauc,active)
 !
       use userinputs, only : useaveragestatevars, maxnparam
       use utilities,  only : gmatvec6
@@ -520,6 +528,8 @@
       integer, intent(in) :: cubicslip
 !     c/a ratio for hcp materials
       real(8), intent(in) :: caratio
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !     plastic part of velocity gradient
       real(8), intent(out) :: Lp(3,3)
 !     plastic stretch rate at the deformed configuration
@@ -561,6 +571,7 @@
 !
 !
       do is=1,nslip
+          if (active(is) .EQ. 1.0) then
 !
 !          
 !         Absolute value of RSS
@@ -594,6 +605,7 @@
 ! 
 !
 !
+      end if
       end do
 !
 !     Find plastic flow direction

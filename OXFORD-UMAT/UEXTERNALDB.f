@@ -10,7 +10,8 @@
 !     Subroutine for initialization 
       use initializations, only : initialize_variables,
      + initialize_once 
-      use userinputs, only : gndmodel, backstressmodel, neighbourhood
+      use userinputs, only : gndmodel, backstressmodel, neighbourhood, 
+     + maxnslip, sourceSim, ngrains
       use globalvariables, only: numel, numpt, 
      + init_once, statev_gmatinv, statev_gmatinv_t,
      + statev_gammasum_t, statev_gammasum,
@@ -28,7 +29,11 @@
      + statev_backstress, statev_backstress_t,
      + statev_plasdiss, statev_plasdiss_t, 
      + statev_theta_t, statev_theta, 
-     + ip_count, calculategradient, ip_init, grad_init
+     + ip_count, calculategradient, ip_init, grad_init,
+     + statev_max_overstress, statev_source_activation, 
+     + statev_source_count, statev_source_register, statev_source_list,
+     + statev_source_list_2, statev_source_stress, statev_source_overstress,
+     + statev_source_newregister
 !
       use straingradients, only: gndmodel1, gndmodel2, 
      + gndmodel3, gndmodel4
@@ -36,6 +41,7 @@
       use meshprop, only: initialize_gradientoperators
       use useroutputs, only: write_statev_legend
       use miscellaneous, only: findneighbours
+      use sources, only: sourcestress
 !
       implicit none
 !
@@ -52,7 +58,7 @@
      + TIME
 !
 !
-      integer :: i
+      integer :: counter(ngrains), i, j
 !
 !
 !
@@ -88,6 +94,20 @@
                   call findneighbours
                   write(*,*) '9. "Computed the neighbours!'
               end if
+              
+!             Calculate Source Strengths              
+              if (sourceSim == 1) then
+              CALL RANDOM_SEED()
+              DO i=1,numel
+                  DO j=1,numpt
+                  
+!             Assign dislocation source stresses
+                  call sourcestress(i,j, maxnslip)  
+                  END DO
+              END DO
+              write(*,*) '10. Source stresses assigned!'
+              end if
+              
 !
 !
           endif
@@ -104,7 +124,9 @@
 !         in case of force BC
           if ((KINC==1).and.(KSTEP==1)) then
 !
-!             
+!         Initialise dislocation source lists
+          statev_max_overstress=0.
+          statev_source_list_2=0 
 !             
 !             check if the one-time initialization is done or not
               if ((init_once==0).and.(numel>0).and.(numpt>0)) then
@@ -209,7 +231,7 @@
 !                 message for initializatoin
                   write(*,*) '7. "STATEV_legend.txt" file is ready!'
 !
-!
+!                 
 !
 !                 set the one-time initilaziation flag (at the very end)
                   init_once=1
@@ -288,8 +310,43 @@
 !
               end if
 !
-          end if
+              end if
 !
+!     UPDATE DISLOCATION SOURCE REGISTERS
+      if (sourceSim == 1) then
+
+              statev_source_newregister=0
+              counter=0
+              do i = 1, numel
+                  do j = 1, numpt
+                      if (statev_source_list_2(i, j, 1) .GT. 0) then
+                          counter(statev_source_list_2(i, j, 2))=counter(statev_source_list_2(i, j, 2))+1
+                          write(*,*), "Source stress: ", statev_source_stress(i, j, statev_source_list_2(i,j,4))
+                          write(*,*) 'New source detected: 0. overstress, max overstress: ', 
+     +                    statev_source_overstress(i, j), statev_max_overstress(statev_source_list_2(i, j, 2))  
+                          write(*,*) 'New source detected: 1. kinc: ', statev_source_list_2(i,j,1)
+                          write(*,*) 'New source detected: 2. grain number: ', statev_source_list_2(i, j, 2)
+                          write(*,*) 'New source detected: 3. source number: ',statev_source_list_2(i, j, 3)
+                          write(*,*) 'New source detected: 4. source slip system: ', statev_source_list_2(i,j,4)
+                          write(*,*) 'New source detected: 5. source slip sign: ', statev_source_list_2(i,j,5)
+                          write(*,*) 'New source detected: 6. element, gp: ', i, j
+                          statev_source_count(statev_source_list_2(i, j, 2))=statev_source_count(statev_source_list_2(i, j, 2))+1
+                          write(*,*) 'Grain number and total sources: ', statev_source_list_2(i, j, 2), 
+     +                    statev_source_count(statev_source_list_2(i, j, 2))
+                                                   
+      ! Update register for new sources
+      statev_source_newregister(statev_source_list_2(i, j, 2), 
+     +  counter(statev_source_list_2(i, j, 2)),1:5) = 
+     +    (/ statev_source_list_2(i,j,1), i, j, 
+     +    statev_source_list_2(i,j,4), statev_source_list_2(i,j,5) /)
+                               
+                          ! Source activation flag
+                          statev_source_list(i, j) = 1
+                          end if
+                  end do
+              end do
+      end if
+
 !         update the time
           time_old = time(2)
 !         store former converged time increment

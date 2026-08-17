@@ -33,10 +33,10 @@
 !     Hardie et al. 2023: https://www.sciencedirect.com/science/article/pii/S0749641923002577
 !     0: Don't use
 !     1: Use
-      integer, parameter, public :: inversebackup = 0
+      integer, parameter, public :: inversebackup = 1
 !
 !     Tolerance for the reverse scheme
-      real(8), parameter, public :: inversetolerance = 10.0 ! MPa.s
+      real(8), parameter, public :: inversetolerance = 1.0 ! MPa.s
 !
 !
 !     Initial guess weight factor
@@ -241,6 +241,22 @@
 !     Horizon radius (has the same unit as the mesh [micrometers])
       real(8), parameter, public :: horizonR = 1.
 !
+!     DISLOCATION SOURCE-CONTROL INPUTS
+!     ------------------------------------------------------------------------------- 
+!
+!     Flag to use dislocation source model
+!     If modelling dislocation sources it is advised to use the 
+!     inverse slip predictor scheme as a backup (i.e., inversebackup = 1 above)
+!     0: OFF
+!     1: ON
+      integer, parameter, public :: sourceSim = 1
+      
+!     Number of grains (must be equal to (optimal) or at least larger than the total number of grains
+      
+      integer, parameter, public :: ngrains = 1
+      
+!     The maximum time increment where sources can be recorded as active (seconds)
+      real(8), parameter, public :: tsource = 0.1
 !
 !
       end module userinputs

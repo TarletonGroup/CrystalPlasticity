@@ -40,7 +40,7 @@
      + hardeningmodel,hardeningparam,
      + irradiationmodel,irradiationparam,
      + sintmat1,sintmat2,hintmat1,hintmat2,
-     + backstressparam)
+     + backstressparam,sourceparam)
       use errors, only : error
       use userinputs, only : maxnslip, maxnparam
       implicit none
@@ -178,6 +178,9 @@
 !     Slip parameters
 !     Array size adjustable
       real(8), intent(out) :: backstressparam(maxnparam)
+      
+!     Dislocation source parameters
+      real(8), intent(out) :: sourceparam(3)
 !
 !     burgers vector scalars
       real(8) :: burger1, burger2
@@ -215,6 +218,8 @@
       irradiationparam = 0.
 !     Backstress parameters
       backstressparam = 0.
+!     Dislocation source parameters
+      sourceparam = 0.
 !
 !
 !     Interaction matrices
@@ -626,6 +631,14 @@
 !
 !         Backstress parameter
           backstressparam(1) = 0.25
+          
+!         Dislocation source parameters
+          ! Reference Source Stress
+          sourceparam(1) = 200.   ! MPa
+          ! Reference Volume
+          sourceparam(2) = 1.     ! um^3
+          ! Weibull Modulus
+          sourceparam(3) = 3.
 !
 !     custom material - hcp (i.e. zirconium)
 !     no temperature dependence

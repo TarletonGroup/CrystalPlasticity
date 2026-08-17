@@ -106,6 +106,9 @@
 !     2: gamma_s: saturation value of the cumulative slip
 !     3: psi / fraction of mobile density for irradiated material for sinh law
 !
+!     Dislocation source parameters
+!     Array size adjustable (maxnmaterial, maxnparam)
+      real(8), allocatable, public :: sourceparam_all(:,:)    
 !
 !     Backstress model parameters
 !     Array size adjustable (maxnmaterial, maxnparam)
@@ -327,6 +330,48 @@
 !     Backstress per slip system at former time step
       real(8), allocatable, public :: statev_backstress_t(:,:,:)
 !
+!     SOURCE-CONTROL Variables
+!     Source variables initialisation time
+      real(8), public :: statev_init_time 
+      
+!     Number of dislocation sources activated per grain (grain_no)
+      integer, allocatable, public :: statev_source_count(:)
+      
+!     Source activation flag (grain_no)
+      integer, allocatable, public :: statev_source_activation(:)
+      
+!     Active source register (grain_no), (source number), (kinc, element, integration point, slip system)
+      integer, allocatable, public :: statev_source_register(:,:,:)
+      
+!     Active register for new sources, i.e., from previous increment (grain_no), (source number), (kinc, element, integration point, slip system)
+      integer, allocatable, public :: statev_source_newregister(:,:,:)     
+      
+!     Active source list to record source details at increment (element, integration point)
+      integer, allocatable, public :: statev_source_list(:,:)
+      
+!     Active source list to record source details at increment (numel, numpt), (kinc, grain_no, source_no, slip system, slip sign)
+      integer, allocatable, public :: statev_source_list_2(:,:,:)
+      
+!     Active flag register to remember active slip systems from previous activation events (numel, numpt, slip systems)
+      real(8), allocatable, public :: statev_active_flag(:,:,:)      
+      
+!     Source overstresses (numel, numpt)
+      real(8), allocatable, public :: statev_source_overstress(:,:)
+
+!     Source stress required for activation (numel,numpt, nslip) 
+      real(8), allocatable, public :: statev_source_stress(:,:,:)
+      
+!     Source stress (for a given slip band)
+      real(8), allocatable, public :: statev_taus(:,:,:)
+      
+!     Maximum source overstress for each grain
+      real(8), allocatable, public :: statev_max_overstress(:)
+      
+!     IP rotated slip system normals
+      real(8), allocatable, public :: ipnors(:,:,:,:)
+      
+!
+!     -------------------------------------------------------------------------------
 !     -------------------------------------------------------------------------------
 !
 !
