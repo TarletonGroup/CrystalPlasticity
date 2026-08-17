@@ -18,7 +18,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,
      + Lp,Pmat,absgammadot,gammadot,
-     + dtau_dgammadot,dgammadot_dtau)
+     + dtau_dgammadot,dgammadot_dtau, active)
 !
       use userinputs, only : useaveragestatevars, maxnparam
       use globalvariables, only : KB
@@ -59,6 +59,8 @@
       real(8), intent(in) :: gammadot(nslip)
 !     crss at the current time step
       real(8), intent(in) :: X(nslip)
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !     Value of RSS
       real(8), intent(inout) :: tau(nslip)
 !     plastic part of velocity gradient
@@ -95,6 +97,7 @@
 !
 !     Contribution to Lp of all slip systems
       do is=1,nslip
+          if (active(is) .EQ. 1.0) then
 !
 !         RSS/CRSS ratio
           xx=abstau(is)/tauc(is)
@@ -144,6 +147,7 @@
           Lp = Lp + gammadot(is)*Schmid(is,:,:)
 !
 !
+      end if
       end do
 !
 !
@@ -161,7 +165,7 @@
      + cubicslip,caratio,
      + Lp,absgammadot, gammadot,
      + dtau_dgammadot,
-     + dgammadot_dtau, Pmat)            
+     + dgammadot_dtau, Pmat, active)            
 !    
 !
       use userinputs, only : useaveragestatevars, 
@@ -204,6 +208,8 @@
       real(8), intent(in) :: caratio
 !     crss at the current time step
       real(8), intent(in) :: X(nslip)
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !     plastic part of velocity gradient
       real(8), intent(out) :: Lp(3,3)
 !     tangent matrix required for N-R iteration (at the inner loop)
@@ -247,6 +253,7 @@
       Lp = 0.
 !     Loop through slip systems
       do is = 1,nslip
+          if (active(is) .EQ. 1.0) then
 !
 !         This is critical threshold
           if (((abstau(is) >= tauc(is)).OR.
@@ -287,6 +294,7 @@
 !
               end if
 !
+      end if
       end do
 !
 !
@@ -306,7 +314,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,
      + Lp,absgammadot,gammadot,
-     + dtau_dgammadot, dgammadot_dtau, Pmat)
+     + dtau_dgammadot, dgammadot_dtau, Pmat, active)
 !
       use userinputs, only : useaveragestatevars, 
      + maxnparam, maxnslip
@@ -350,6 +358,8 @@
       real(8), intent(in) :: caratio
 !     crss at the current time step
       real(8), intent(in) :: X(nslip)
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !     plastic part of velocity gradient
       real(8), intent(out) :: Lp(3,3)
 !     tangent matrix required for N-R iteration (at the inner loop)
@@ -427,6 +437,7 @@
       Lp = 0.
 !     Loop through slip systems
       do is = 1,nslip
+          if (active(is) .EQ. 1.0) then
 !
 !
 !         alpha calculation
@@ -557,7 +568,7 @@
 !              dtau_dgammadot(is,is) = 0.             
 !
               end if
-     
+      end if
       end do
 !
 !

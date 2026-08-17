@@ -38,6 +38,7 @@
       include "initializations.f"
       include "slip.f"
       include "slipreverse.f"
+      include "sources.f"
       include "creep.f"
       include "innerloop.f"
       include "hardening.f"
@@ -198,7 +199,7 @@
 !
 !
 !             call the main crystal plasticity solver
-              call solve(NOEL,NPT,DFGRD1,DFGRD0,
+              call solve(KINC,COORDS,NOEL,NPT,DFGRD1,DFGRD0,
      + TEMP,DTEMP,JSTEP(1),TIME(1),DTIME,matid,
      + PNEWDT,NSTATV,STATEV,sigma,jacobi,elas)
 !

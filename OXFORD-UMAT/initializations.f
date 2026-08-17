@@ -190,7 +190,7 @@
      + props,temp,nstatv,ntens,stress)
       use userinputs, only: constanttemperature, temperature,
      + maxnslip, maxnparam, maxnmaterial, maxnloop,
-     + backstressmodel, readmaterialfile
+     + backstressmodel, readmaterialfile, sourceSim
       use globalvariables, only: Euler, materialid,
      + featureid, phaseid, ipcoords, numdim,
      + statev_gmatinv, statev_gmatinv_t, ip_init,
@@ -216,7 +216,7 @@
      + irradiationmodel_all, irradiationparam_all,
      + sintmat1_all, sintmat2_all,
      + hintmat1_all, hintmat2_all,
-     + backstressparam_all 
+     + backstressparam_all, sourceparam_all, statev_source_stress  
 !
       use irradiation, only: calculateintmats4irradmodel2
       use usermaterials, only: materialparam
@@ -276,6 +276,8 @@
       real(8) :: irradiationparam(maxnparam)
 !     Backstress parameters
       real(8) :: backstressparam(maxnparam)
+!     Dislocation source paramaters
+      real(8) :: sourceparam(maxnparam)
 !     Cubic slip for fcc nickel superalloys only
       integer :: cubicslip
 !     Material temperature
@@ -344,6 +346,8 @@
       real(8) :: sumrhotot_0
 !     Effective CRSS
       real(8) :: tauceff_0(maxnslip)
+!     Source Strength
+      real(8) :: taus_0(maxnslip)
 !     Variables used in the calculations here within this subroutine
 !     Elasiticity
       real(8) :: C11, C12, C44, C13, C33
@@ -355,6 +359,7 @@
       integer :: i, j, k, ind, is, nloop, dum
       integer :: i0, i1, i2
       real(8) :: dir(3), nor(3)
+      integer :: debug, debugwait
 !
 !
 !     Reset arrays
@@ -369,11 +374,13 @@
       slipparam=0.;creepparam=0.
       hardeningparam=0.; irradiationparam=0.
       backstressparam = 0.
+      sourceparam = 0.
 !
       loop_0=0.; tausolute_0=0.
       rhofor_0=0.; rhotot_0=0.
       sumrhotot_0=0.; gnd_0=0.
       tauceff_0=0.
+      taus_0=0.
 !
 !
 !
@@ -483,7 +490,7 @@
      + hardeningmodel,hardeningparam,
      + irradiationmodel,irradiationparam,
      + sintmat1,sintmat2,hintmat1,hintmat2,
-     + backstressparam)
+     + backstressparam, sourceparam)
 !
 !     If material properies are defined in PROPS vector
       elseif (readfromprops==1) then
@@ -942,7 +949,10 @@
 !
 !
 !     backstress parameters
-      backstressparam_all(matid,:)=backstressparam     
+      backstressparam_all(matid,:)=backstressparam   
+      
+!     dislocation source parameters
+      sourceparam_all(matid,:)=sourceparam 
 !
 !     Initialize initial (undeformed) slip vectors
 !     This is needed once per element since the material is different
@@ -996,7 +1006,11 @@
 !     Screw systems
       screw_all(matid,1:nscrew)=screw(1:nscrew)
 !
-!
+!     Dislocation Source Strengths
+      if (sourceSim .EQ. 1) then
+          taus_0(1:nslip)=statev_source_stress(noel,npt,1:nslip)
+      end if
+      
 !
 !     Initial GND density (may or may not be present!)
       gnd_0=statev_gnd_0(noel,npt,:)
@@ -1019,7 +1033,7 @@
      + substructure_0, tausolute_0, loop_0(1:maxnloop), 
      + hardeningmodel, hardeningparam, 
      + irradiationmodel, irradiationparam,
-     + mattemp, tauceff_0(1:nslip))
+     + mattemp, tauceff_0(1:nslip), taus_0(1:nslip))
 !
 !
       statev_tauceff(noel,npt,1:maxnslip)=tauceff_0
@@ -1078,14 +1092,24 @@
      + statev_backstress, statev_plasdiss_t,
      + statev_theta, statev_theta_t, randnum,
      + statev_plasdiss, statev_tauceff, statev_Fr,
-     + numneigh, eleneigh, iptneigh, facneigh
+     + numneigh, eleneigh, iptneigh, facneigh,
+     + sourceparam_all, statev_backstress_t,
+     + statev_backstress, statev_source_count,
+     + statev_source_overstress,statev_source_stress,
+     + statev_active_flag, statev_source_newregister, statev_source_register,
+     + statev_taus, statev_source_list, statev_source_list_2,
+     + statev_source_activation, statev_max_overstress, ipnors, calculategradient,
+     + time_old, dt_t
 !
       use userinputs, only : maxnslip, maxnparam,
-     + maxnmaterial, maxnloop, maxneigh
+     + maxnmaterial, maxnloop, maxneigh, sourceSim, ngrains
       implicit none
       integer i, j, k
 !
-!
+!     Time records
+      time_old=0.
+      dt_t=0.
+      
 !     Can be different for each element
       allocate(Euler(numel,3))
       Euler=0.
@@ -1372,6 +1396,35 @@
       allocate(facneigh(numel,numpt,maxneigh))
       facneigh=0.
 !
+      !     SOURCE-CONTROL variables
+      if (sourceSim .EQ. 1) then
+          allocate(statev_source_stress(numel,numpt,maxnslip))
+          statev_source_stress=0.
+          allocate(statev_taus(numel,numpt,maxnslip))
+          statev_taus=0.
+          allocate(statev_source_count(ngrains)) 
+          statev_source_count=0
+          allocate(statev_source_activation(ngrains))
+          statev_source_activation=0.
+          allocate(statev_source_register(ngrains,numel*numpt, 5))! (kinc, grain_no, source_no, slip system, slip sign)
+          statev_source_register=0
+          allocate(statev_source_newregister(ngrains,numel*numpt, 5))! (kinc, grain_no, source_no, slip system, slip sign)
+          statev_source_newregister=0
+          allocate(statev_source_list(numel, numpt)) 
+          statev_source_list=0
+          allocate(statev_source_list_2(numel, numpt, 5)) ! (kinc, grain_no, source_no, slip system, slip sign)
+          statev_source_list_2=0   
+          allocate(statev_source_overstress(numel,numpt))
+          statev_source_overstress=0.
+          allocate(statev_max_overstress(ngrains))
+          statev_max_overstress=0.
+          allocate(statev_active_flag(numel,numpt,maxnslip))
+          statev_active_flag=0.
+          allocate(ipnors(numel,numpt,maxnslip,numdim))
+          ipnors=0.
+      end if
+      allocate(sourceparam_all(maxnmaterial,maxnparam))
+      sourceparam_all=0.
 !
       return
       end subroutine allocate_arrays

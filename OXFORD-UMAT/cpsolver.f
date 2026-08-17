@@ -15,7 +15,7 @@
 !     spare solution
 !     3. calls implicit or explicit CP-solvers
 !     4. assigns the results to the glboal state variables
-      subroutine solve(noel, npt, dfgrd1, dfgrd0,
+      subroutine solve(kinc, coords, noel, npt, dfgrd1, dfgrd0,
      + temp, dtemp, jstep, tstep, dt, 
      + matid, pnewdt, nstatv, statev,
      + sigma, jacobi, elas)
@@ -42,11 +42,13 @@
      + irradiationparam_all, backstressparam_all, slip2screw_all,
      + statev_backstress_t, statev_backstress, statev_plasdiss_t,
      + statev_plasdiss, statev_theta_t, statev_theta,
-     + statev_tauceff, statev_Fr, I3, I6, smallnum
+     + statev_tauceff, statev_Fr, I3, I6, smallnum,
+     + statev_source_list, statev_active_flag, statev_taus
 !
       use userinputs, only: constanttemperature, temperature,
      + predictor, maxnslip, maxnparam, maxxcr, cutback,
-     + phi, maxnloop, stateupdate, readresidualstrainfile, tres
+     + phi, maxnloop, stateupdate, readresidualstrainfile, tres,
+     + sourceSim, maxnmaterial
 !
 !
       use usermaterials, only: materialparam
@@ -56,11 +58,19 @@
       use useroutputs, only: assignoutputs, nstatv_outputs
 !
       use errors, only: error
+      
+      use sources, only : sourceactivation, sourceseek
 !
       use utilities, only: inv3x3, nolapinverse, matvec6, vecmat6,
      + rotord4sig, gmatvec6
 !
       implicit none
+!
+!     Increment number
+      integer, intent(in) :: kinc
+!
+!     IP Coordinates
+      real(8), intent(in) :: coords(3)
 !
 !     element no
       integer, intent(in) :: noel
@@ -294,6 +304,8 @@
       real(8) :: iparam(maxnparam)
 !     Backstress parameters
       real(8) :: bparam(maxnparam)
+!     Dislocation source parameters
+      real(8) :: sourceparam(maxnparam)
 !     Burgers vector
       real(8) :: burgerv(numslip_all(matid))
 !     Interaction matrices
@@ -393,6 +405,13 @@
       real(8) :: notused7(maxnslip,maxnslip)
 !     Initial forest and substructure densities
       real(8) :: notused8, notused9
+!     Dislocation source paramas 
+      real(8) :: notused10(maxnmaterial,maxnparam)
+      
+!     SOURCE-CONTROL variables
+      real(8) :: active(maxnslip)
+      real(8) :: taus(maxnslip)
+      real(8) :: taus_t(maxnslip) 
 !
 !     counter
       integer :: is, i, j
@@ -403,6 +422,7 @@
       notused1=0.;notused2=0.;notused3=0.
       notused4=0.;notused5=0.
       notused6=0.;notused7=0.
+      notused10=0.
 !
 !
 !
@@ -481,6 +501,16 @@
 !
 !     residual deformation gradient
       Fr0=statev_Fr(noel,npt,:,:)
+      
+!     Source Stress
+
+      if (sourceSim == 1) then
+      taus_t = statev_taus(noel,npt,:)
+      taus = statev_taus(noel,npt,:)
+      else
+          taus=0.
+          taus_t=0.
+      end if
 !
 !     Material parameters are constant
       caratio = caratio_all(matid)
@@ -538,7 +568,7 @@
      + smodel,sparam,cmodel,cparam,
      + hmodel,hparam,imodel,iparam,
      + notused4,notused5,notused6,
-     + notused7,bparam) ! Interaction matrices are not updated here
+     + notused7,bparam,notused10) ! Interaction matrices are not updated here
 !
 !
 !  
@@ -606,7 +636,7 @@
      + burgerv, sintmat1, sintmat2, tauc_t,
      + rhotot_t, sumrhotot_t, rhofor_t, substructure_t,
      + tausolute_t, loop_t, hmodel, hparam, imodel, iparam,
-     + mattemp, tauceff_t)
+     + mattemp, tauceff_t, taus)
 !
 !
 !
@@ -791,12 +821,31 @@
       end do
 !
 !
+      !
+      active=1.
+!
+!     Search for active sources
+      if (sourceSim == 1) then
+!     Update active flag     
+        active=statev_active_flag(noel, npt,:)
+
+ !    Identify slip strength limited by active source (taucs)
+          call sourceseek(kinc, matid, noel, npt, nslip, taus, active, Schmidvec, sigmatr)
+
+!     Calculate crss
+          call slipresistance(phaid, nslip, gf, G12,
+     +    burgerv, sintmat1, sintmat2, tauc_t,
+     +    rhotot_t, sumrhotot_t, rhofor_t, substructure_t,
+     +    tausolute_t, loop_t, hmodel, hparam, imodel, iparam,
+     +    mattemp, tauceff_t, taus)
+      
+      end if
 !
 !     CALCULATE TRIAL-RESOLVED SHEAR STRESS ON SLIP SYSTEMS
 !     rss and its sign
       do is = 1, nslip
           tautr(is) = dot_product(Schmidvec(is,:),sigmatr)-X_t(is)
-          abstautr(is) = abs(tautr(is))
+          abstautr(is) = active(is)*abs(tautr(is))
       end do
 !
 !
@@ -958,7 +1007,7 @@
      + tauceff, tauc, tausolute,
      + ssdtot, ssd, loop, X,
      + forest, substructure,
-     + sigma, jacobi, cpconv)
+     + sigma, jacobi, cpconv, active, taus)
 !
 !
 !
@@ -989,6 +1038,20 @@
       endif
 !
 !
+!     Check if a source has activated at this location             
+      if ((sourceSim == 1) .AND. (pnewdt .GE. 1.0)) then
+      if (statev_source_list(noel, npt) .NE. 1) then
+      if (kinc .GT. 1) then   ! Source stresses are calculated at the end of the first increment (which must remain elastic) 
+          call sourceactivation(kinc, sigma, nslip, Schmidvec, tauceff_t, 
+     +                        matid,noel,npt,dt,nors_t, coords, pnewdt)
+          if (pnewdt .LT. 1.0) then
+!             Set the outputs to zero initially
+              sigma = 0.
+              jacobi = I6
+          end if
+      end if
+      end if
+      end if
 !
 !
 !
@@ -1020,6 +1083,8 @@
       statev_theta(noel,npt)=theta
 !     Overall CRSS
       statev_tauceff(noel,npt,1:nslip)=tauceff
+!     Source Stress
+      statev_taus(noel,npt,:)=taus
 !
 !     Write the outputs for post-processing
 !     If outputs are defined by the user
@@ -1083,7 +1148,8 @@
      + tauceff, tauc, tausolute,
      + ssdtot, ssd, loop, X,
      + forest, substructure,
-     + sigma, jacobi, cpconv)
+     + sigma, jacobi, cpconv,
+     + active, taus)
 !
       use globalvariables, only : I3, I6, smallnum
 !
@@ -1231,6 +1297,11 @@
       real(8), intent(in) :: W(3,3)
 !     mechanical strain increment
       real(8), intent(in) :: dstran(6)
+!     Source-Control Variables
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
+!     Source stress (on slip band)
+      real(8), intent(in) :: taus(nslip)
 !
 !
 !
@@ -1419,7 +1490,7 @@
 !     other variables
       real(8) :: dummy3(3), dummy33(3,3),
      + dummy33_(3,3), dummy6(6), dummy0
-      integer :: is, il, iter, oiter
+      integer :: is, il, iter, oiter, i
       integer :: iterinverse
 !
 !
@@ -1470,7 +1541,7 @@
      + sigma,tau,cpconv,
      + gammadot,Lp,
      + Dp,dstranp33,
-     + invdpsi_dsigma,iter)
+     + invdpsi_dsigma,iter,active)
 !
 !
 !         convergence check
@@ -1535,7 +1606,7 @@
      + dt,sigmatr,
      + abstautr,signtautr,
      + tauceff,rhofor,X,
-     + sigma,iterinverse)              
+     + sigma,iterinverse, active)              
 !
 !
 !
@@ -1561,7 +1632,8 @@
      + sigma,tau,cpconv,
      + gammadot,Lp,
      + Dp,dstranp33,
-     + invdpsi_dsigma,iter)      
+     + invdpsi_dsigma,iter, active) 
+     
 !
 !             assign jacobi and stress
               if (cpconv == 0) then
@@ -1684,7 +1756,7 @@
      + substructure, tausolute, loop,
      + hardeningmodel, hardeningparam,
      + irradiationmodel, irradiationparam,
-     + mattemp, tauceff)
+     + mattemp, tauceff, taus)
 !
 !
 !         Calculate the change of state
@@ -1819,6 +1891,22 @@
 !
 !     determinant
       call deter3x3(Fp,detFp)
+      
+!
+!!     The incremental update of Fp - added by Chris Hardie (11/05/2023)
+!!     check wheter the determinant is negative
+!!     or close zero
+      if ((detFp <= smallnum) .or. any(Fp/=Fp)) then ! Try integrating slip over sub time increments dt/1024 CDH 03042023
+          Fp=Fp_t
+          dummy33 = I3 - Lp*dt/1024.
+          call inv3x3(dummy33,dummy33_,dummy0)
+          do i = 1, 10
+                  dummy33_ = matmul(dummy33_,dummy33_)
+          end do
+          Fp = matmul(dummy33_,Fp_t)
+          !     determinant
+      call deter3x3(Fp,detFp)
+      end if
 !
 !     check wheter the determinant is negative
 !     or close zero

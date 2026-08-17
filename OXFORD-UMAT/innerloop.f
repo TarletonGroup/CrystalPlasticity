@@ -16,7 +16,7 @@
      + sigma,tau,cpconv,
      + gammadot,Lp,
      + Dp,dstranp33,
-     + invdpsi_dsigma,iter)
+     + invdpsi_dsigma,iter, active)
 !
       use globalvariables, only : I6
 !
@@ -83,6 +83,8 @@
 !     total slip per slip system accumulated over the time
 !     at the current time step
       real(8), intent(in) :: gammasum(nslip)
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !
 !     INOUTS
 !     Cauchy stress
@@ -189,7 +191,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,Lp_s,Dp_s,Pmat_s,
      + gammadot_s,dgammadot_dtau_s,
-     + dgammadot_dtauc_s)
+     + dgammadot_dtauc_s,active)
 !
 !
 !         exponential law
@@ -201,7 +203,7 @@
      + mattemp,slipparam,irradiationmodel,
      + irradiationparam,cubicslip,caratio,
      + Lp_s,Dp_s,Pmat_s,gammadot_s,dgammadot_dtau_s,
-     + dgammadot_dtauc_s)
+     + dgammadot_dtauc_s,active)
 !
 !
 !         power law
@@ -214,7 +216,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,Lp_s,Dp_s,Pmat_s,
      + gammadot_s,dgammadot_dtau_s,
-     + dgammadot_dtauc_s)
+     + dgammadot_dtauc_s,active)
 !
 !
           end if
@@ -391,7 +393,7 @@
      + dt,sigmatr,
      + abstautr,signtautr,
      + tauceff,rhofor,X,
-     + sigma,iterinverse)
+     + sigma,iterinverse,active)
 !
       use globalvariables, only : I3, I6, smallnum
 !
@@ -452,6 +454,8 @@
       real(8), intent(in) :: rhofor(nslip)
 !     crss at the current time step
       real(8), intent(in) :: X(nslip)
+!     Active slip systems flag
+      real(8), intent(in) :: active(nslip)
 !
 !     OUTPUTS
 !     Cauchy stress
@@ -559,7 +563,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,Lp_s,
      + absgammadot_s, gammadot_s,
-     + dtau_dgammadot_s, dgammadot_dtau,Pmat)
+     + dtau_dgammadot_s, dgammadot_dtau,Pmat,active)
 !
 !
 !
@@ -574,7 +578,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,
      + Lp_s,Pmat,absgammadot_s,gammadot_s,
-     + dtau_dgammadot_s,dgammadot_dtau) 
+     + dtau_dgammadot_s,dgammadot_dtau,active) 
 !
 !
 !         power law
@@ -588,7 +592,7 @@
      + irradiationmodel,irradiationparam,
      + cubicslip,caratio,
      + Lp_s,absgammadot_s, gammadot_s,dtau_dgammadot_s,
-     + dgammadot_dtau, Pmat)  
+     + dgammadot_dtau, Pmat,active)  
 !
 !
           end if
@@ -597,7 +601,7 @@
 !         rss and its sign
           activesum=0
           do is = 1, nslip
-              tau(is) = signtau(is)*abstau(is)
+              tau(is) = signtau(is)*abstau(is)*active(is)
               if (abstau(is) .GE. tauceff(is)) then
                   activesum=activesum+1.0
               end if
