@@ -249,7 +249,7 @@
 !     inverse slip predictor scheme as a backup (i.e., inversebackup = 1 above)
 !     0: OFF
 !     1: ON
-      integer, parameter, public :: sourceSim = 1
+      integer, parameter, public :: sourceSim = 0
       
 !     Number of grains (must be equal to (optimal) or at least larger than the total number of grains
       
