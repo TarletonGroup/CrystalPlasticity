@@ -1,5 +1,5 @@
 ! OXFORD-UMAT - Crystal Plasticity Solver
-! April 14th, 2026 - Release v3.4
+! August 18th, 2026 - Release ---
 ! November 1st, 2022 - 1st working version
 !
 ! Crystal Plasticity UMAT
