@@ -232,7 +232,8 @@
       real(8) :: forest(numslip_all(matid))
 !
 !     Cauchy stress at the former time step
-      real(8) :: sigma_t(6)
+      real(8) :: sigma_t(6), sigma33_t(3,3)
+      real(8) :: drotsig33(3,3), drotsig(6)
 !
 !     Strain increment
       real(8) :: dstran(6)
@@ -805,8 +806,18 @@
 !
 !     CALCULATION OF TRIAL STRESS
 !
+!     3x3 stress tensor
+      call vecmat6(sigma_t,sigma33_t)
+!
+!     Cauchy stress increment due to spin
+      drotsig33 = (matmul(W,sigma33_t) -
+     + matmul(sigma33_t,W))*dt
+!
+!     Vectorize the initial guess
+      call matvec6(drotsig33,drotsig)
+!
 !     Trial stress
-      sigmatr =  sigma_t + matmul(Cs,dstran)
+      sigmatr =  sigma_t + matmul(Cs,dstran) + drotsig
 !
 !
 !
@@ -1432,7 +1443,7 @@
       real(8) :: sigmaii, vms, sigmadev(3,3)
 !
 !     Co-rotational stress update
-      real(8) :: dotsigma33(3,3)
+      real(8) :: drotsig33(3,3)
 !
 !     Cauchy stress at former time step in 3x3
       real(8) :: sigma33_t(3,3)
@@ -1942,18 +1953,17 @@
       We = (Le - transpose(Le)) / 2.
 !
 !
-!!     UMAT DOES THE ROTATION UPDATE ITSELF
-!!     THERE IS NO NEED FOR THE ROTATION CORRECTION!
-!!     stress rate due to spin
-!      dotsigma33 = matmul(W,sigma33) - matmul(sigma33,W)
-!!
-!!
-!!     Update co-rotational sress state
-!      sigma33 = sigma33 + dotsigma33*dt
-!!
-!!
-!!     Vectorize stress
-!      call matvec6(sigma33,sigma)
+
+!     stress rate due to spin
+      drotsig33 = (matmul(We,sigma33) - matmul(sigma33,We))*dt
+!
+!
+!     Update co-rotational sress state
+      sigma33 = sigma33 + drotsig33
+!
+!
+!     Vectorize stress
+      call matvec6(sigma33,sigma)
 !
 !
 !
