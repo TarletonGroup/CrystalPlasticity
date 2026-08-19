@@ -1094,8 +1094,11 @@
       statev_theta(noel,npt)=theta
 !     Overall CRSS
       statev_tauceff(noel,npt,1:nslip)=tauceff
-!     Source Stress
-      statev_taus(noel,npt,:)=taus
+      if (sourceSim .EQ. 1) then     
+!         Source Stress
+          statev_taus(noel,npt,:)=taus
+      end if
+      
 !
 !     Write the outputs for post-processing
 !     If outputs are defined by the user
