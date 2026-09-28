@@ -601,9 +601,9 @@
 !         rss and its sign
           activesum=0
           do is = 1, nslip
-              tau(is) = signtau(is)*abstau(is)*active(is)
+              tau(is) = signtau(is)*abstau(is)
               if (abstau(is) .GE. tauceff(is)) then
-                  activesum=activesum+1.0
+                  activesum=activesum+active(is)
               end if
           end do             
 !
@@ -628,15 +628,11 @@
 !         Invert diagonal matrix
           dpsi_dgammadotinv=0.
           do is = 1, nslip
-              dpsi_dgammadotinv(is,is)=1/dpsi_dgammadot(is,is)
+              dpsi_dgammadotinv(is,is)=active(is)/dpsi_dgammadot(is,is)
           end do
 !
 !
-          damping=min(2.0/activesum, 1.0)!0.5)
-!          damping = 0.5
-!          if (psinorm > 200.0) then
-!              damping=min(2.0/activesum, 0.5)
-!          end if
+          damping=min(2.0/activesum, 0.5)
 !
 !         slip increment
           dgammadot = matmul(dpsi_dgammadotinv,psi)
